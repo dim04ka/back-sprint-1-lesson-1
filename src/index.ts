@@ -5,10 +5,13 @@ import { setupApp } from './setup-app'
 export const app = express()
 setupApp(app)
 
-// порт приложения
-const PORT = process.env.PORT || 5001
+// экспорт для Vercel serverless функций
+export default app
 
-// запуск приложения
-app.listen(PORT, () => {
-    console.log(`Example app listening on port ${PORT}`)
-})
+// запуск сервера для локальной разработки (не на Vercel)
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+    const PORT = process.env.PORT || 5001
+    app.listen(PORT, () => {
+        console.log(`Example app listening on port ${PORT}`)
+    })
+}
