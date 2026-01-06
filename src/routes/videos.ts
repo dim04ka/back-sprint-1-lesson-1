@@ -1,29 +1,40 @@
 import { Router, Request, Response } from 'express'
 import { db } from '../db'
-import { Video } from '../types'
+import { HttpStatus, Video } from '../types'
+import {
+    getCreatedAndPublicationDates,
+    validateCreateVideoDto,
+    validateUpdateVideoDto,
+} from '../utils'
 
 export const videosRouter = Router({})
 
 videosRouter.get('', (_: Request, res: Response) => {
-    return res.status(200).send(db.videos)
+    return res.status(HttpStatus.Ok).send(db.videos)
 })
 
 videosRouter.get('/:id', (req: Request, res: Response) => {
     const video = db.videos.find((v) => v.id === +req.params.id)
     if (!video) {
-        return res.status(404).send({ message: 'Video not found' })
+        return res
+            .status(HttpStatus.NotFound)
+            .send({ message: 'Video not found' })
     }
 
-    res.status(200).send(video)
+    res.status(HttpStatus.Ok).send(video)
 })
 
 videosRouter.post('', (req: Request, res: Response) => {
-    const date = new Date()
+    const errorsMessages = validateCreateVideoDto(req.body)
 
-    const createdAt = date.toISOString()
-    const publicationDate = new Date(
-        date.setHours(date.getHours() + 1)
-    ).toISOString()
+    if (errorsMessages.length > 0) {
+        return res
+            .status(HttpStatus.BadRequest)
+            .send({ errorsMessages })
+    }
+
+    const { createdAt, publicationDate } =
+        getCreatedAndPublicationDates()
     const newVideo: Video = {
         id: db.videos.length
             ? db.videos[db.videos.length - 1].id + 1
@@ -39,20 +50,24 @@ videosRouter.post('', (req: Request, res: Response) => {
 
     db.videos.push(newVideo)
 
-    res.status(201).send(newVideo)
+    res.status(HttpStatus.Created).send(newVideo)
 })
 
 videosRouter.put('/:id', (req: Request, res: Response) => {
     const video = db.videos.find((v) => v.id === +req.params.id)
     if (!video) {
-        return res.status(404).send({ message: 'Video not found' })
+        return res
+            .status(HttpStatus.NotFound)
+            .send({ message: 'Video not found' })
+    }
+    const errorsMessages = validateUpdateVideoDto(req.body)
+    if (errorsMessages.length > 0) {
+        return res
+            .status(HttpStatus.BadRequest)
+            .send({ errorsMessages })
     }
 
-    const date = new Date()
-
-    const publicationDate = new Date(
-        date.setHours(date.getHours() + 1)
-    ).toISOString()
+    const { publicationDate } = getCreatedAndPublicationDates()
 
     video.title = req.body.title
     video.author = req.body.author
@@ -62,15 +77,17 @@ videosRouter.put('/:id', (req: Request, res: Response) => {
     video.publicationDate =
         req.body.publicationDate ?? publicationDate
 
-    res.status(204).send()
+    res.status(HttpStatus.NoContent).send()
 })
 
 videosRouter.delete('/:id', (req: Request, res: Response) => {
     const video = db.videos.find((v) => v.id === +req.params.id)
     if (!video) {
-        return res.status(404).send({ message: 'Video not found' })
+        return res
+            .status(HttpStatus.NotFound)
+            .send({ message: 'Video not found' })
     }
 
     db.videos = db.videos.filter((v) => v.id !== +req.params.id)
-    res.status(204).send()
+    res.status(HttpStatus.NoContent).send()
 })

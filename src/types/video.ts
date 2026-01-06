@@ -25,3 +25,17 @@ export type CreateVideoDto = {
     author: string
     availableResolutions: Resolution[]
 }
+
+export type ErrorMessages = {
+    message: string
+    field: string
+}[]
+
+export type UpdateVideoDto = {
+    title: string
+    author: string
+    availableResolutions: Resolution[]
+    canBeDownloaded: boolean
+    minAgeRestriction: number | null
+    publicationDate: string
+}
