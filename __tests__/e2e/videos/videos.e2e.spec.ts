@@ -24,7 +24,7 @@ describe('Videos API', () => {
             .send({
                 title: 'Test Video',
                 author: 'Test Author',
-                availableResolutions: [Resolution.x144],
+                availableResolutions: [Resolution.P144],
             })
         expect(res.status).toBe(HttpStatus.Created)
         expect(res.body).toEqual({
@@ -35,7 +35,7 @@ describe('Videos API', () => {
             minAgeRestriction: null,
             createdAt: expect.any(String),
             publicationDate: expect.any(String),
-            availableResolutions: [Resolution.x144],
+            availableResolutions: [Resolution.P144],
         })
     })
 
@@ -45,7 +45,7 @@ describe('Videos API', () => {
             .send({
                 title: '',
                 author: 'Test Author',
-                availableResolutions: [Resolution.x144],
+                availableResolutions: [Resolution.P144],
             })
         expect(res.status).toBe(HttpStatus.BadRequest)
         expect(res.body).toEqual({
@@ -65,7 +65,7 @@ describe('Videos API', () => {
             .send({
                 title: null,
                 author: 'Test Author',
-                availableResolutions: [Resolution.x144],
+                availableResolutions: [Resolution.P144],
             })
         expect(res.status).toBe(HttpStatus.BadRequest)
         expect(res.body).toEqual({
@@ -79,27 +79,7 @@ describe('Videos API', () => {
         })
     })
 
-    it('should return error if passed title is incorrect', async () => {
-        const res = await request(app)
-            .post('/videos')
-            .send({
-                title: null,
-                author: 'Test Author',
-                availableResolutions: [Resolution.x144],
-            })
-        expect(res.status).toBe(HttpStatus.BadRequest)
-        expect(res.body).toEqual({
-            errorsMessages: [
-                {
-                    message:
-                        'Title is required and must be between 1 and 40 characters',
-                    field: 'title',
-                },
-            ],
-        })
-    })
-
-    it('should return error if passed title is incorrect availableResolutions', async () => {
+    it('should return error if availableResolutions is incorrect ', async () => {
         const res = await request(app)
             .post('/videos')
             .send({
@@ -125,7 +105,7 @@ describe('Videos API', () => {
             .send({
                 title: 'Updated Test Video',
                 author: 'Test Author',
-                availableResolutions: [Resolution.x144],
+                availableResolutions: [Resolution.P144],
                 canBeDownloaded: true,
                 minAgeRestriction: 18,
                 publicationDate: new Date().toISOString(),
@@ -140,7 +120,7 @@ describe('Videos API', () => {
             minAgeRestriction: 18,
             createdAt: expect.any(String),
             publicationDate: expect.any(String),
-            availableResolutions: [Resolution.x144],
+            availableResolutions: [Resolution.P144],
         })
         expect(res.status).toBe(HttpStatus.NoContent)
     })
@@ -151,7 +131,7 @@ describe('Videos API', () => {
             .send({
                 title: 'Updated Test Video 2',
                 author: 'Test Author',
-                availableResolutions: [Resolution.x144],
+                availableResolutions: [Resolution.P144],
                 canBeDownloaded: 'string',
                 minAgeRestriction: 18,
                 publicationDate: new Date().toISOString(),
