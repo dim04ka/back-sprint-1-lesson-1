@@ -1,6 +1,7 @@
 import {
     CreateVideoDto,
     ErrorMessages,
+    Resolution,
     UpdateVideoDto,
 } from '../types'
 
@@ -28,6 +29,17 @@ export const validateCreateVideoDto = (body: CreateVideoDto) => {
     if (!availableResolutions || availableResolutions.length === 0) {
         errorsMessages.push({
             message: 'Available resolutions are required',
+            field: 'availableResolutions',
+        })
+    }
+    if (
+        availableResolutions.some(
+            (resolution) =>
+                !Object.values(Resolution).includes(resolution)
+        )
+    ) {
+        errorsMessages.push({
+            message: 'Available resolutions are incorrect',
             field: 'availableResolutions',
         })
     }
@@ -70,7 +82,10 @@ export const validateUpdateVideoDto = (body: UpdateVideoDto) => {
         })
     }
 
-    if (canBeDownloaded === undefined) {
+    if (
+        canBeDownloaded === undefined ||
+        typeof canBeDownloaded !== 'boolean'
+    ) {
         errorsMessages.push({
             message: 'Can be downloaded is required',
             field: 'canBeDownloaded',
