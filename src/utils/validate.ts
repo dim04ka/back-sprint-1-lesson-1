@@ -83,6 +83,18 @@ export const validateUpdateVideoDto = (body: UpdateVideoDto) => {
     }
 
     if (
+        availableResolutions.some(
+            (resolution) =>
+                !Object.values(Resolution).includes(resolution)
+        )
+    ) {
+        errorsMessages.push({
+            message: 'Available resolutions are incorrect',
+            field: 'availableResolutions',
+        })
+    }
+
+    if (
         canBeDownloaded === undefined ||
         typeof canBeDownloaded !== 'boolean'
     ) {
@@ -105,7 +117,10 @@ export const validateUpdateVideoDto = (body: UpdateVideoDto) => {
         })
     }
 
-    if (publicationDate === undefined) {
+    if (
+        publicationDate === undefined ||
+        typeof publicationDate !== 'string'
+    ) {
         errorsMessages.push({
             message:
                 'Publication date is required and must be in the future',

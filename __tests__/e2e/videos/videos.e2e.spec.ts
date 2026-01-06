@@ -125,7 +125,7 @@ describe('Videos API', () => {
         expect(res.status).toBe(HttpStatus.NoContent)
     })
 
-    it('should update a video', async () => {
+    it('should update a video and return error if canBeDownloaded is incorrect', async () => {
         const res = await request(app)
             .put('/videos/2')
             .send({
@@ -143,6 +143,35 @@ describe('Videos API', () => {
                 {
                     message: 'Can be downloaded is required',
                     field: 'canBeDownloaded',
+                },
+            ],
+        })
+    })
+
+    it('should update a video', async () => {
+        const res = await request(app)
+            .put('/videos/3')
+            .send({
+                title: 'title',
+                author: 'length_21-weqweqweqwq',
+                availableResolutions: [Resolution.P144],
+                canBeDownloaded: true,
+                minAgeRestriction: 18,
+                publicationDate: 1995,
+            })
+
+        expect(res.status).toBe(HttpStatus.BadRequest)
+        expect(res.body).toEqual({
+            errorsMessages: [
+                {
+                    message:
+                        'Author is required and must be between 1 and 20 characters',
+                    field: 'author',
+                },
+                {
+                    message:
+                        'Publication date is required and must be in the future',
+                    field: 'publicationDate',
                 },
             ],
         })
