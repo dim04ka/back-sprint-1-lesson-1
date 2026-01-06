@@ -1,0 +1,327 @@
+openapi: 3.0.0
+info:
+    title: Videos API
+    version: 1.0.0
+    description: Videos API documentation
+
+tags:
+    - name: Testing
+      description: API for clearing the database
+    - name: Videos
+      description: API for managing videos
+
+paths:
+    /videos:
+        get:
+            summary: Get all videos
+            description: Returns all videos
+            tags:
+                - Videos
+            responses:
+                200:
+                    description: A list of videos
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Video'
+        post:
+            summary: Create a new video
+            description: Creates a new video
+            tags:
+                - Videos
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateVideoDto'
+            responses:
+                201:
+                    description: Video created successfully
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Video'
+                400:
+                    description: Bad request
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorMessages'
+    /videos/{id}:
+        get:
+            summary: Get a video by id
+            description: Returns a video by id
+            tags:
+                - Videos
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: integer
+                  description: The id of the video
+            responses:
+                200:
+                    description: A video
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Video'
+                404:
+                    description: Video not found
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                                        example: Video not found
+        put:
+            summary: Update a video
+            description: Updates a video
+            tags:
+                - Videos
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: integer
+                  description: The id of the video
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateVideoDto'
+            responses:
+                204:
+                    description: Video updated successfully
+                400:
+                    description: Bad request
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorMessages'
+                404:
+                    description: Video not found
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                                        example: Video not found
+        delete:
+            summary: Delete a video
+            description: Deletes a video by id
+            tags:
+                - Videos
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: integer
+                  description: The id of the video
+            responses:
+                204:
+                    description: Video deleted successfully
+                404:
+                    description: Video not found
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                                        example: Video not found
+    /testing/all-data:
+        delete:
+            summary: Delete all data
+            description: Clears all videos from the database
+            tags:
+                - Testing
+            responses:
+                204:
+                    description: All data deleted successfully
+
+components:
+    schemas:
+        Resolution:
+            type: string
+            enum:
+                - P144
+                - P240
+                - P360
+                - P480
+                - P720
+                - P1080
+                - P1440
+                - P2160
+            description: Available video resolutions
+        Video:
+            type: object
+            required:
+                - id
+                - title
+                - author
+                - canBeDownloaded
+                - minAgeRestriction
+                - createdAt
+                - publicationDate
+                - availableResolutions
+            properties:
+                id:
+                    type: integer
+                    description: Unique identifier for the video
+                    example: 1
+                title:
+                    type: string
+                    minLength: 1
+                    maxLength: 40
+                    description: Video title
+                    example: 'My Video'
+                author:
+                    type: string
+                    minLength: 1
+                    maxLength: 20
+                    description: Video author
+                    example: 'John Doe'
+                canBeDownloaded:
+                    type: boolean
+                    description: Whether the video can be downloaded
+                    example: false
+                minAgeRestriction:
+                    type: integer
+                    nullable: true
+                    minimum: 0
+                    maximum: 18
+                    description: Minimum age restriction (null if no restriction)
+                    example: null
+                createdAt:
+                    type: string
+                    format: date-time
+                    description: Date and time when the video was created
+                    example: '2024-01-01T00:00:00.000Z'
+                publicationDate:
+                    type: string
+                    format: date-time
+                    description: Date and time when the video will be published
+                    example: '2024-01-02T00:00:00.000Z'
+                availableResolutions:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Resolution'
+                    minItems: 1
+                    description: List of available video resolutions
+                    example:
+                        - P144
+                        - P240
+                        - P360
+        CreateVideoDto:
+            type: object
+            required:
+                - title
+                - author
+                - availableResolutions
+            properties:
+                title:
+                    type: string
+                    minLength: 1
+                    maxLength: 40
+                    description: Video title (1-40 characters)
+                    example: 'My Video'
+                author:
+                    type: string
+                    minLength: 1
+                    maxLength: 20
+                    description: Video author (1-20 characters)
+                    example: 'John Doe'
+                availableResolutions:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Resolution'
+                    minItems: 1
+                    description: List of available video resolutions (at least one required)
+                    example:
+                        - P144
+                        - P240
+                        - P360
+        UpdateVideoDto:
+            type: object
+            required:
+                - title
+                - author
+                - availableResolutions
+                - canBeDownloaded
+                - minAgeRestriction
+                - publicationDate
+            properties:
+                title:
+                    type: string
+                    minLength: 1
+                    maxLength: 40
+                    description: Video title (1-40 characters)
+                    example: 'My Updated Video'
+                author:
+                    type: string
+                    minLength: 1
+                    maxLength: 20
+                    description: Video author (1-20 characters)
+                    example: 'John Doe'
+                availableResolutions:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Resolution'
+                    minItems: 1
+                    description: List of available video resolutions (at least one required)
+                    example:
+                        - P144
+                        - P240
+                        - P360
+                        - P720
+                canBeDownloaded:
+                    type: boolean
+                    description: Whether the video can be downloaded
+                    example: false
+                minAgeRestriction:
+                    type: integer
+                    nullable: true
+                    minimum: 0
+                    maximum: 18
+                    description: Minimum age restriction (0-18, null allowed)
+                    example: null
+                publicationDate:
+                    type: string
+                    format: date-time
+                    description: Date and time when the video will be published (must be in the future)
+                    example: '2024-01-02T00:00:00.000Z'
+        ErrorMessages:
+            type: array
+            items:
+                type: object
+                required:
+                    - message
+                    - field
+                properties:
+                    message:
+                        type: string
+                        description: Error message
+                        example: 'Title is required and must be between 1 and 40 characters'
+                    field:
+                        type: string
+                        description: Field name that caused the error
+                        example: 'title'
+            description: Array of validation error messages
+            example:
+                - message: 'Title is required and must be between 1 and 40 characters'
+                  field: 'title'
+                - message: 'Author is required and must be between 1 and 20 characters'
+                  field: 'author'
