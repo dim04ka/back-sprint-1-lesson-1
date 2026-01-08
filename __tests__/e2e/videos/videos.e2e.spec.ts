@@ -3,8 +3,12 @@ import request from 'supertest'
 import express from 'express'
 import { setupApp } from '../../../src/setup-app'
 import { db } from '../../../src/db'
-import { Resolution } from '../../../src/types'
-import { HttpStatus } from '../../../src/types'
+import { Resolution } from '../../../src/videos/dto'
+import { HttpStatus } from '../../../src/core/types/http-statuses'
+import { API_VERSION, ROUTES } from '../../../src/core/path'
+
+const videosRoute = `${API_VERSION}/${ROUTES.VIDEOS}`
+const videoRouteId = (id: number) => `${videosRoute}/${id}`
 
 describe('Videos API', () => {
     const app = express()
@@ -12,7 +16,7 @@ describe('Videos API', () => {
 
     // GET /videos
     it('should return all videos', async () => {
-        const res = await request(app).get('/videos')
+        const res = await request(app).get(videosRoute)
         expect(res.status).toBe(HttpStatus.Ok)
         expect(res.body).toEqual(db.videos)
     })
@@ -20,7 +24,7 @@ describe('Videos API', () => {
     // POST /videos
     it('should create a new video', async () => {
         const res = await request(app)
-            .post('/videos')
+            .post(videosRoute)
             .send({
                 title: 'Test Video',
                 author: 'Test Author',
@@ -41,7 +45,7 @@ describe('Videos API', () => {
 
     it('should return error if passed body is incorrect', async () => {
         const res = await request(app)
-            .post('/videos')
+            .post(videosRoute)
             .send({
                 title: '',
                 author: 'Test Author',
@@ -61,7 +65,7 @@ describe('Videos API', () => {
 
     it('should return error if passed title is incorrect', async () => {
         const res = await request(app)
-            .post('/videos')
+            .post(videosRoute)
             .send({
                 title: null,
                 author: 'Test Author',
@@ -81,7 +85,7 @@ describe('Videos API', () => {
 
     it('should return error if availableResolutions is incorrect ', async () => {
         const res = await request(app)
-            .post('/videos')
+            .post(videosRoute)
             .send({
                 title: 'Test Video',
                 author: 'Test Author',
@@ -101,7 +105,7 @@ describe('Videos API', () => {
     // PUT /videos/:id
     it('should update a video', async () => {
         const res = await request(app)
-            .put('/videos/1')
+            .put(videoRouteId(1))
             .send({
                 title: 'Updated Test Video',
                 author: 'Test Author',
@@ -111,7 +115,7 @@ describe('Videos API', () => {
                 publicationDate: new Date().toISOString(),
             })
 
-        const getRes = await request(app).get('/videos/1')
+        const getRes = await request(app).get(videoRouteId(1))
         expect(getRes.body).toEqual({
             id: 1,
             title: 'Updated Test Video',
@@ -127,7 +131,7 @@ describe('Videos API', () => {
 
     it('should update a video and return error if canBeDownloaded is incorrect', async () => {
         const res = await request(app)
-            .put('/videos/2')
+            .put(videoRouteId(2))
             .send({
                 title: 'Updated Test Video 2',
                 author: 'Test Author',
@@ -150,7 +154,7 @@ describe('Videos API', () => {
 
     it('should update a video', async () => {
         const res = await request(app)
-            .put('/videos/3')
+            .put(videoRouteId(3))
             .send({
                 title: 'title',
                 author: 'length_21-weqweqweqwq',

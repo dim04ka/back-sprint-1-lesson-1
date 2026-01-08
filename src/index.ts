@@ -1,11 +1,9 @@
 import express from 'express'
 import { setupApp } from './setup-app'
 
-// создание приложения
 export const app = express()
 setupApp(app)
 
-// экспорт для Vercel serverless функций
 export default app
 
 // запуск сервера для локальной разработки (не на Vercel)

@@ -1,6 +1,7 @@
 import express, { Express, Response, Request } from 'express'
-import { videosRouter, testingRouter } from './routes'
+import { videosRouter } from './videos/routes'
 import { setupSwagger } from './core/swagger'
+import { API_VERSION, ROUTES } from './core/path'
 
 export const setupApp = (app: Express) => {
     app.use(express.json())
@@ -9,8 +10,7 @@ export const setupApp = (app: Express) => {
         res.status(200).send('Hello world!')
     })
 
-    app.use('/api/videos', videosRouter)
-    app.use('/api/testing', testingRouter)
+    app.use(`${API_VERSION}/${ROUTES.VIDEOS}`, videosRouter)
 
     setupSwagger(app)
 

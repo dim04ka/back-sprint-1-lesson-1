@@ -3,7 +3,7 @@ import {
     ErrorMessages,
     Resolution,
     UpdateVideoDto,
-} from '../types'
+} from '../dto'
 
 type ValidationError = {
     message: string

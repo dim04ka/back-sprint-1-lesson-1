@@ -1,4 +1,4 @@
-import { Video, Resolution } from '../types'
+import { Video, Resolution } from '../videos/dto'
 
 export const db = {
     videos: <Video[]>[
