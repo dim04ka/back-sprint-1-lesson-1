@@ -1,22 +1,11 @@
 import { Request, Response } from 'express'
 import { videosRepository } from '../../repositories/videos.repository'
 import { HttpStatus } from '../../../core/types/http-statuses'
-import {
-    getCreatedAndPublicationDates,
-    validateCreateVideoDto,
-} from '../../utils'
+import { getCreatedAndPublicationDates } from '../../utils'
 import { db } from '../../../db'
 import { Video } from '../../dto'
 
 export const createVideoHandler = (req: Request, res: Response) => {
-    const errorsMessages = validateCreateVideoDto(req.body)
-
-    if (errorsMessages.length > 0) {
-        return res
-            .status(HttpStatus.BadRequest)
-            .send({ errorsMessages })
-    }
-
     const { createdAt, publicationDate } =
         getCreatedAndPublicationDates()
     const newVideo: Video = {

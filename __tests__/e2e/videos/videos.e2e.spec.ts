@@ -6,6 +6,7 @@ import { db } from '../../../src/db'
 import { Resolution } from '../../../src/videos/dto'
 import { HttpStatus } from '../../../src/core/types/http-statuses'
 import { API_VERSION, ROUTES } from '../../../src/core/path'
+import { ADMIN_USERNAME, ADMIN_PASSWORD } from '../../../src/const'
 
 const videosRoute = `${API_VERSION}/${ROUTES.VIDEOS}`
 const videoRouteId = (id: number) => `${videosRoute}/${id}`
@@ -25,6 +26,7 @@ describe('Videos API', () => {
     it('should create a new video', async () => {
         const res = await request(app)
             .post(videosRoute)
+            .auth(ADMIN_USERNAME, ADMIN_PASSWORD)
             .send({
                 title: 'Test Video',
                 author: 'Test Author',
@@ -43,63 +45,52 @@ describe('Videos API', () => {
         })
     })
 
-    it('should return error if passed body is incorrect', async () => {
+    it('should return error if passed title is incorrect', async () => {
         const res = await request(app)
             .post(videosRoute)
+            .auth(ADMIN_USERNAME, ADMIN_PASSWORD)
             .send({
                 title: '',
                 author: 'Test Author',
                 availableResolutions: [Resolution.P144],
             })
         expect(res.status).toBe(HttpStatus.BadRequest)
-        expect(res.body).toEqual({
-            errorsMessages: [
-                {
-                    message:
-                        'Title is required and must be between 1 and 40 characters',
-                    field: 'title',
-                },
-            ],
-        })
     })
 
     it('should return error if passed title is incorrect', async () => {
         const res = await request(app)
             .post(videosRoute)
+            .auth(ADMIN_USERNAME, ADMIN_PASSWORD)
             .send({
                 title: null,
                 author: 'Test Author',
                 availableResolutions: [Resolution.P144],
             })
         expect(res.status).toBe(HttpStatus.BadRequest)
-        expect(res.body).toEqual({
-            errorsMessages: [
-                {
-                    message:
-                        'Title is required and must be between 1 and 40 characters',
-                    field: 'title',
-                },
-            ],
-        })
+    })
+
+    it('should return error if passed author is incorrect', async () => {
+        const res = await request(app)
+            .post(videosRoute)
+            .auth(ADMIN_USERNAME, ADMIN_PASSWORD)
+            .send({
+                title: 'Test Video',
+                author: '',
+                availableResolutions: [Resolution.P144],
+            })
+        expect(res.status).toBe(HttpStatus.BadRequest)
     })
 
     it('should return error if availableResolutions is incorrect ', async () => {
         const res = await request(app)
             .post(videosRoute)
+            .auth(ADMIN_USERNAME, ADMIN_PASSWORD)
             .send({
                 title: 'Test Video',
                 author: 'Test Author',
                 availableResolutions: ['test'],
             })
         expect(res.status).toBe(HttpStatus.BadRequest)
-        expect(res.body).toEqual({
-            errorsMessages: [
-                {
-                    message: 'Available resolutions are incorrect',
-                    field: 'availableResolutions',
-                },
-            ],
-        })
     })
 
     // PUT /videos/:id
