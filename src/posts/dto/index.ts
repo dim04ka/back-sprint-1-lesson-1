@@ -3,6 +3,13 @@ export type Post = {
     title: string
     shortDescription: string
     content: string
-    blogId: number
+    blogId: string
     blogName: string
+}
+
+export type CreatePost = {
+    title: string
+    shortDescription: string
+    content: string
+    blogId: string
 }

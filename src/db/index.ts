@@ -52,14 +52,5 @@ export const db = {
             websiteUrl: 'https://blog1.com',
         },
     ],
-    posts: <Post[]>[
-        {
-            id: '1',
-            title: 'Post 1',
-            shortDescription: 'Short Description 1',
-            content: 'Content 1',
-            blogId: 1,
-            blogName: 'Blog 1',
-        },
-    ],
+    posts: <Post[]>[],
 }
