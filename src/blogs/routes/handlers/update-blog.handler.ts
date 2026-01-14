@@ -18,5 +18,5 @@ export const updateBlogHandler = (req: Request, res: Response) => {
         websiteUrl: req.body.websiteUrl,
     }
     blogsRepository.update(updatedBlog)
-    res.status(HttpStatus.Ok).send(updatedBlog)
+    res.status(HttpStatus.NoContent).send(updatedBlog)
 }

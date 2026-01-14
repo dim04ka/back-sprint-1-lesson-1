@@ -37,4 +37,17 @@ describe('Blogs API', () => {
             .send(newBlog)
         expect(res.status).toBe(HttpStatus.Created)
     })
+
+    it('should update a blog', async () => {
+        const updatedBlog = {
+            nam: 'Updated Blog',
+            description: 'description',
+            websiteUrl: 'invalid-url',
+        }
+        const res = await request(app)
+            .put(`${ROUTES.BLOGS}/11111`)
+            .auth(ADMIN_USERNAME, ADMIN_PASSWORD)
+            .send(updatedBlog)
+        expect(res.status).toBe(HttpStatus.BadRequest)
+    })
 })

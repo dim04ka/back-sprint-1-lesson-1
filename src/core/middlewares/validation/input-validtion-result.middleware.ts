@@ -25,7 +25,7 @@ export const inputValidationResultMiddleware = (
     if (errors.length) {
         return res
             .status(HttpStatus.BadRequest)
-            .json({ errorMessages: errors })
+            .json({ errorsMessages: errors })
     }
 
     next() // Если ошибок нет, передаём управление дальше
