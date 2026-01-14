@@ -5,10 +5,10 @@ import { setupApp } from '../../../src/setup-app'
 import { db } from '../../../src/db'
 import { Resolution } from '../../../src/videos/dto'
 import { HttpStatus } from '../../../src/core/types/http-statuses'
-import { API_VERSION, ROUTES } from '../../../src/core/path'
+import { ROUTES } from '../../../src/core/path'
 import { ADMIN_USERNAME, ADMIN_PASSWORD } from '../../../src/const'
 
-const videosRoute = `${API_VERSION}/${ROUTES.VIDEOS}`
+const videosRoute = `${ROUTES.VIDEOS}`
 const videoRouteId = (id: number) => `${videosRoute}/${id}`
 
 describe('Videos API', () => {
