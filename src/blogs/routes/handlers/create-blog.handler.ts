@@ -1,0 +1,20 @@
+import { Request, Response } from 'express'
+import { Blog } from '../../dto'
+import { db } from '../../../db'
+import { blogsRepository } from '../../repository'
+import { HttpStatus } from '../../../core/types/http-statuses'
+
+export const createBlogHandler = (req: Request, res: Response) => {
+    const newBlog: Blog = {
+        id: db.blogs.length
+            ? db.blogs[db.blogs.length - 1].id + 1
+            : 1,
+        name: req.body.name,
+        description: req.body.description,
+        websiteUrl: req.body.websiteUrl,
+    }
+
+    blogsRepository.create(newBlog)
+
+    res.status(HttpStatus.Created).send(newBlog)
+}

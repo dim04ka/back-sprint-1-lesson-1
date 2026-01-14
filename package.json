@@ -1,7 +1,7 @@
 {
-    "name": "video-api",
+    "name": "blogger-api",
     "version": "1.0.0",
-    "description": "Video API",
+    "description": "Blogger API",
     "main": "src/index.ts",
     "scripts": {
         "watch": "tsc -w",
