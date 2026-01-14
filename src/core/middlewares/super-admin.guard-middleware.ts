@@ -8,7 +8,7 @@ export const superAdminGuardMiddleware = (
     next: NextFunction
 ) => {
     const auth = req.headers['authorization']
-    console.log('auth', auth)
+
     if (!auth) {
         res.sendStatus(HttpStatus.Unauthorized)
         return
