@@ -4,5 +4,5 @@ export const ROUTES = {
     VIDEOS: `/videos`,
     BLOGS: `/blogs`,
     POSTS: `/posts`,
-    TESTING: `/testing/all-data`,
+    TESTING: `/testing`,
 }
