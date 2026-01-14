@@ -1,38 +1,47 @@
 import { body } from 'express-validator'
 
-export const nameValidation = body('name')
+export const titleValidation = body('title')
     .exists()
     .withMessage('Name is required')
     .isString()
     .withMessage('Name must be a string')
     .trim()
-    .isLength({ min: 1, max: 15 })
-    .withMessage('Name must be between 1 and 15 characters')
+    .isLength({ min: 1, max: 30 })
+    .withMessage('Title must be between 1 and 30 characters')
 
-export const descriptionValidation = body('description')
+export const shortDescriptionValidation = body('shortDescription')
     .exists()
-    .withMessage('Description is required')
+    .withMessage('Short description is required')
     .isString()
-    .withMessage('Description must be a string')
+    .withMessage('Short description must be a string')
     .trim()
-    .isLength({ min: 1, max: 500 })
-    .withMessage('Description must be between 1 and 500 characters')
-
-export const websiteUrlValidation = body('websiteUrl')
-    .exists()
-    .withMessage('Website URL is required')
-    .isString()
-    .withMessage('Website URL must be a string')
-    .trim()
-    .matches(
-        /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/
-    )
-    .withMessage('Website URL must be a valid URL')
     .isLength({ min: 1, max: 100 })
-    .withMessage('Website URL must be between 1 and 100 characters')
+    .withMessage(
+        'Short description must be between 1 and 100 characters'
+    )
 
-export const createBlogValidationMiddleware = [
-    nameValidation,
-    descriptionValidation,
-    websiteUrlValidation,
+export const contentValidation = body('content')
+    .exists()
+    .withMessage('Content is required')
+    .isString()
+    .withMessage('Content must be a string')
+    .trim()
+    .isLength({ min: 1, max: 1000 })
+    .withMessage('Content must be between 1 and 1000 characters')
+
+export const blogIdValidation = body('blogId')
+    .exists()
+    .withMessage('Blog ID is required')
+    .isString()
+    .withMessage('Blog ID must be a string')
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage('Blog ID must not be empty')
+    .isNumeric()
+
+export const createPostValidationMiddleware = [
+    titleValidation,
+    shortDescriptionValidation,
+    contentValidation,
+    blogIdValidation,
 ]

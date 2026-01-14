@@ -4,7 +4,7 @@ import {
     inputValidationResultMiddleware,
 } from '../../core/middlewares/validation'
 
-import { createBlogValidationMiddleware } from './validate'
+import { createPostValidationMiddleware } from './validate'
 import { superAdminGuardMiddleware } from '../../core/middlewares/super-admin.guard-middleware'
 import {
     getPostHandler,
@@ -26,7 +26,7 @@ postsRouter.get(
 postsRouter.post(
     '',
     superAdminGuardMiddleware,
-    createBlogValidationMiddleware,
+    createPostValidationMiddleware,
     inputValidationResultMiddleware,
     createPostHandler
 )
@@ -34,6 +34,7 @@ postsRouter.put(
     '/:id',
     superAdminGuardMiddleware,
     idValidation,
+    createPostValidationMiddleware,
     inputValidationResultMiddleware,
     updatePostHandler
 )
