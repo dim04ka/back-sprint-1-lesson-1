@@ -20,5 +20,5 @@ export const updatePostHandler = (req: Request, res: Response) => {
         blogName: req.body.blogName,
     }
     postsRepository.update(updatedPost)
-    res.status(HttpStatus.Ok).send(updatedPost)
+    res.sendStatus(HttpStatus.NoContent)
 }
