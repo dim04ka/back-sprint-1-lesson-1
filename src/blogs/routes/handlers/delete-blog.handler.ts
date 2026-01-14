@@ -3,7 +3,7 @@ import { HttpStatus } from '../../../core/types/http-statuses'
 import { blogsRepository } from '../../repository'
 
 export const deleteBlogHandler = (req: Request, res: Response) => {
-    const id = Number(req.params.id)
+    const id = req.params.id
     const blog = blogsRepository.findById(id)
     if (!blog) {
         return res

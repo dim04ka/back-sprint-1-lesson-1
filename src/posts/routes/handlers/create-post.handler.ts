@@ -5,10 +5,11 @@ import { postsRepository } from '../../repository'
 import { HttpStatus } from '../../../core/types/http-statuses'
 
 export const createPostHandler = (req: Request, res: Response) => {
+    const lastPostId = db.posts.length
+        ? db.posts[db.posts.length - 1].id + 1
+        : 1
     const newPost: Post = {
-        id: db.posts.length
-            ? db.posts[db.posts.length - 1].id + 1
-            : 1,
+        id: String(lastPostId),
         title: req.body.title,
         shortDescription: req.body.shortDescription,
         content: req.body.content,

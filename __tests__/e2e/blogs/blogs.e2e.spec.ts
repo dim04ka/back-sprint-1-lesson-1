@@ -5,6 +5,7 @@ import { setupApp } from '../../../src/setup-app'
 import { db } from '../../../src/db'
 import { HttpStatus } from '../../../src/core/types/http-statuses'
 import { ROUTES } from '../../../src/core/path'
+import { ADMIN_USERNAME, ADMIN_PASSWORD } from '../../../src/const'
 
 describe('Blogs API', () => {
     const app = express()
@@ -22,5 +23,18 @@ describe('Blogs API', () => {
         const res = await request(app).get(`${ROUTES.BLOGS}/1`)
         expect(res.status).toBe(HttpStatus.Ok)
         expect(res.body).toEqual(db.blogs[0])
+    })
+
+    it('should create a new blog', async () => {
+        const newBlog = {
+            name: 'Test Blog',
+            description: 'Test Description',
+            websiteUrl: 'https://test.com',
+        }
+        const res = await request(app)
+            .post(`${ROUTES.BLOGS}`)
+            .auth(ADMIN_USERNAME, ADMIN_PASSWORD)
+            .send(newBlog)
+        expect(res.status).toBe(HttpStatus.Created)
     })
 })

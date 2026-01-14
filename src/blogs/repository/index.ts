@@ -5,7 +5,7 @@ export const blogsRepository = {
     findAll(): Blog[] {
         return db.blogs
     },
-    findById(id: number): Blog | undefined {
+    findById(id: string): Blog | undefined {
         return db.blogs.find((b) => b.id === id)
     },
     create(blog: Blog): void {
@@ -18,7 +18,7 @@ export const blogsRepository = {
         }
         db.blogs[foundIndex] = blog
     },
-    delete(id: number): void {
+    delete(id: string): void {
         const foundIndex = db.blogs.findIndex((b) => b.id === id)
         if (foundIndex === -1) {
             throw new Error('Blog not found')

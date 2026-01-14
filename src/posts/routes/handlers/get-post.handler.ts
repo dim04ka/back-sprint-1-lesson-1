@@ -3,7 +3,7 @@ import { postsRepository } from '../../repository'
 import { HttpStatus } from '../../../core/types/http-statuses'
 
 export const getPostHandler = (req: Request, res: Response) => {
-    const id = Number(req.params.id)
+    const id = req.params.id
     const post = postsRepository.findById(id)
     if (!post) {
         return res

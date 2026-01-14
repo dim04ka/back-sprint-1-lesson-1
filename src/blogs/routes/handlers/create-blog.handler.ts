@@ -5,10 +5,11 @@ import { blogsRepository } from '../../repository'
 import { HttpStatus } from '../../../core/types/http-statuses'
 
 export const createBlogHandler = (req: Request, res: Response) => {
+    const lastBlogId = db.blogs.length
+        ? db.blogs[db.blogs.length - 1].id + 1
+        : 1
     const newBlog: Blog = {
-        id: db.blogs.length
-            ? db.blogs[db.blogs.length - 1].id + 1
-            : 1,
+        id: String(lastBlogId),
         name: req.body.name,
         description: req.body.description,
         websiteUrl: req.body.websiteUrl,

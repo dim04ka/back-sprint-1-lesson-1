@@ -3,7 +3,7 @@ import { blogsRepository } from '../../repository'
 import { HttpStatus } from '../../../core/types/http-statuses'
 
 export const getBlogHandler = (req: Request, res: Response) => {
-    const id = Number(req.params.id)
+    const id = req.params.id
     const blog = blogsRepository.findById(id)
     if (!blog) {
         return res

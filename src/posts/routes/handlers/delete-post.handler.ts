@@ -3,7 +3,7 @@ import { HttpStatus } from '../../../core/types/http-statuses'
 import { postsRepository } from '../../repository'
 
 export const deletePostHandler = (req: Request, res: Response) => {
-    const id = Number(req.params.id)
+    const id = req.params.id
     const post = postsRepository.findById(id)
     if (!post) {
         return res

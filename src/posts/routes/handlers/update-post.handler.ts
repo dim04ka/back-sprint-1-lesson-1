@@ -4,7 +4,7 @@ import { postsRepository } from '../../repository'
 import { Post } from '../../dto'
 
 export const updatePostHandler = (req: Request, res: Response) => {
-    const id = Number(req.params.id)
+    const id = req.params.id
     const post = postsRepository.findById(id)
     if (!post) {
         return res
