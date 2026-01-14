@@ -21,8 +21,8 @@ export const postsRepository = {
     delete(id: string): void {
         const foundIndex = db.posts.findIndex((p) => p.id === id)
         if (foundIndex === -1) {
-            throw new Error('Blog not found')
+            throw new Error('Post not found')
         }
-        db.blogs.splice(foundIndex, 1)
+        db.posts.splice(foundIndex, 1)
     },
 }
