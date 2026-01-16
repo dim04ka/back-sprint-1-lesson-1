@@ -1,5 +1,5 @@
 import express, { Express, Response, Request } from 'express'
-import { videosRouter } from './videos/routes'
+
 import { setupSwagger } from './core/swagger'
 import { ROUTES } from './core/path'
 import { blogsRouter } from './blogs/routes'
@@ -13,7 +13,6 @@ export const setupApp = (app: Express) => {
         res.status(200).send('Hello world!')
     })
 
-    app.use(`${ROUTES.VIDEOS}`, videosRouter)
     app.use(`${ROUTES.BLOGS}`, blogsRouter)
     app.use(`${ROUTES.POSTS}`, postsRouter)
     app.use(`${ROUTES.TESTING}`, testingRouter)
