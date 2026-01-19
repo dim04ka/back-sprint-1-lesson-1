@@ -1,21 +1,20 @@
 import { postsCollection } from '../../db/mongo.db'
-import { Post } from '../dto'
+import { CreatePost, PostViewModel } from '../dto'
 import { ObjectId, WithId } from 'mongodb'
 
 export const postsRepository = {
-    async findAll(): Promise<WithId<Post>[] | undefined> {
+    async findAll(): Promise<WithId<PostViewModel>[] | undefined> {
         return postsCollection.find().toArray()
     },
-    async findById(id: string): Promise<WithId<Post> | null> {
+    async findById(id: string): Promise<WithId<PostViewModel> | null> {
         return postsCollection.findOne({ _id: new ObjectId(id) })
 
     },
-    async create(post: Post): Promise<WithId<{ createdAt: string }>> {
-        const createdAt = new Date().toISOString();
-        const postWithCreatedAt = { ...post, createdAt };
-        const result = await postsCollection.insertOne(postWithCreatedAt);
+    async create(post: CreatePost & { createdAt: string }): Promise<string> {
+        
+        const result = await postsCollection.insertOne(post as PostViewModel);
 
-        return { _id: result.insertedId, createdAt };
+        return result.insertedId.toString();
     },
     async delete(id: string): Promise<void> {
         const result = await postsCollection.deleteOne({ _id: new ObjectId(id) });
@@ -23,7 +22,7 @@ export const postsRepository = {
             throw new Error('Post not found');
         }
     },
-    async update({id, post}: {id: string, post: Post}): Promise<void> {
+    async update({id, post}: {id: string, post: CreatePost}): Promise<void> {
         const result = await postsCollection.updateOne({ _id: new ObjectId(id) }, { $set: post });
         if (result.matchedCount === 0) {
             throw new Error('Post not found');

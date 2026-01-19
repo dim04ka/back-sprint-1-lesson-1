@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { HttpStatus } from '../../../core/types/http-statuses'
 import { postsRepository } from '../../repository'
-import { Post } from '../../dto'
+import { CreatePost } from '../../dto'
 import { blogsRepository } from '../../../blogs/repository'
 
 export const updatePostHandler = async (req: Request, res: Response) => {
@@ -20,7 +20,7 @@ export const updatePostHandler = async (req: Request, res: Response) => {
     }
 
     const { title, shortDescription, content, blogId } = req.body
-    const updatedPost: Post = {
+    const updatedPost: CreatePost = {
         title,
         shortDescription,
         content,

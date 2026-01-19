@@ -1,11 +1,11 @@
 import { Request, Response } from 'express'
-import { FullPost, Post } from '../../dto'
+import {  CreatePost, PostViewModel } from '../../dto'
 
 import { postsRepository } from '../../repository'
 import { HttpStatus } from '../../../core/types/http-statuses'
 import { blogsRepository } from '../../../blogs/repository'
 
-import { WithId } from 'mongodb'
+
 
 export const createPostHandler = async (req: Request, res: Response) => {
     const { title, shortDescription, content, blogId } = req.body
@@ -16,24 +16,23 @@ export const createPostHandler = async (req: Request, res: Response) => {
             .send({ message: 'Blog not found' })
     }
 
-    const newPost: Post = {
+   
+    const newPost: CreatePost & { createdAt: string } = {
         title,
         shortDescription,
         content,
         blogId,
+        createdAt: new Date().toISOString(),
     }
 
-    const createdPost: WithId< { createdAt: string }>  = await postsRepository.create(newPost)
 
+    const id = await postsRepository.create({ ...newPost })
 
-    const postWithInfo: FullPost = {
-        id: createdPost._id.toString(),
-        title: newPost.title,
-        shortDescription: newPost.shortDescription,
-        content: newPost.content,
-        blogId: newPost.blogId,
+    const postWithInfo: PostViewModel = {
+        ...newPost,
+        id,
         blogName: blog.name,
-        createdAt: createdPost.createdAt,
     }
+
     res.status(HttpStatus.Created).send(postWithInfo)
 }
