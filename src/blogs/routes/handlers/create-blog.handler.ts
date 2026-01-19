@@ -9,12 +9,16 @@ export const createBlogHandler = async (
 ): Promise<void> => {
 
     const { name, description, websiteUrl } = req.body
+
+    const additionalBlogData = {
+        createdAt: new Date().toISOString(),
+        isMembership: false,
+    }
     const newBlog: Blog = {
         name,
         description,
         websiteUrl,
-        createdAt: new Date().toISOString(),
-        isMembership: true,
+       ...additionalBlogData,
     }
 
     const { id } = await blogsRepository.create(newBlog)
@@ -24,8 +28,7 @@ export const createBlogHandler = async (
         name,
         description,
         websiteUrl,
-        createdAt: new Date().toISOString(),
-        isMembership: false,
+        ...additionalBlogData,
     }
 
     res.status(HttpStatus.Created).send(responseBlog)
