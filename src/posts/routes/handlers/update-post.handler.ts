@@ -4,28 +4,28 @@ import { postsRepository } from '../../repository'
 import { Post } from '../../dto'
 import { blogsRepository } from '../../../blogs/repository'
 
-export const updatePostHandler = (req: Request, res: Response) => {
+export const updatePostHandler = async (req: Request, res: Response) => {
     const id = req.params.id
-    const post = postsRepository.findById(id)
+    const post = await postsRepository.findById(id)
     if (!post) {
         return res
             .status(HttpStatus.NotFound)
             .send({ message: 'Post not found' })
     }
-    const blog = blogsRepository.findById(req.body.blogId)
+    const blog = await blogsRepository.findById(req.body.blogId)
     if (!blog) {
         return res
             .status(HttpStatus.NotFound)
             .send({ message: 'Blog not found' })
     }
+
+    const { title, shortDescription, content, blogId } = req.body
     const updatedPost: Post = {
-        ...post,
-        title: req.body.title,
-        shortDescription: req.body.shortDescription,
-        content: req.body.content,
-        blogId: req.body.blogId,
-        blogName: blog.name,
+        title,
+        shortDescription,
+        content,
+        blogId,
     }
-    postsRepository.update(updatedPost)
+    await postsRepository.update({id, post: updatedPost})
     res.sendStatus(HttpStatus.NoContent)
 }

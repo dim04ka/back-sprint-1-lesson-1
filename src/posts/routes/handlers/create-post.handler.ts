@@ -1,31 +1,39 @@
 import { Request, Response } from 'express'
-import { Post } from '../../dto'
-import { db } from '../../../db'
+import { FullPost, Post } from '../../dto'
+
 import { postsRepository } from '../../repository'
 import { HttpStatus } from '../../../core/types/http-statuses'
 import { blogsRepository } from '../../../blogs/repository'
-import { CreatePost } from '../../dto'
 
-export const createPostHandler = (req: Request, res: Response) => {
-    const blog = blogsRepository.findById(req.body.blogId)
+import { WithId } from 'mongodb'
+
+export const createPostHandler = async (req: Request, res: Response) => {
+    const { title, shortDescription, content, blogId } = req.body
+    const blog = await blogsRepository.findById(blogId)
     if (!blog) {
         return res
             .status(HttpStatus.NotFound)
             .send({ message: 'Blog not found' })
     }
-    const lastPostId = db.posts.length
-        ? db.posts[db.posts.length - 1].id + 1
-        : 1
+
     const newPost: Post = {
-        id: String(lastPostId),
-        title: req.body.title,
-        shortDescription: req.body.shortDescription,
-        content: req.body.content,
-        blogId: req.body.blogId,
-        blogName: blog.name,
+        title,
+        shortDescription,
+        content,
+        blogId,
     }
 
-    postsRepository.create(newPost)
+    const createdPost: WithId< { createdAt: string }>  = await postsRepository.create(newPost)
 
-    res.status(HttpStatus.Created).send(newPost)
+
+    const postWithInfo: FullPost = {
+        id: createdPost._id.toString(),
+        title: newPost.title,
+        shortDescription: newPost.shortDescription,
+        content: newPost.content,
+        blogId: newPost.blogId,
+        blogName: blog.name,
+        createdAt: createdPost.createdAt,
+    }
+    res.status(HttpStatus.Created).send(postWithInfo)
 }

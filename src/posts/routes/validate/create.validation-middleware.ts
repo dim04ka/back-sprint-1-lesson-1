@@ -37,7 +37,6 @@ export const blogIdValidation = body('blogId')
     .trim()
     .isLength({ min: 1 })
     .withMessage('Blog ID must not be empty')
-    .isNumeric()
 
 export const createPostValidationMiddleware = [
     titleValidation,

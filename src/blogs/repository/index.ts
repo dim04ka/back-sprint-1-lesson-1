@@ -1,28 +1,31 @@
-import { db } from '../../db'
+import { ObjectId, WithId } from 'mongodb'
+import { blogsCollection } from '../../db/mongo.db'
 import { Blog } from '../dto'
 
 export const blogsRepository = {
-    findAll(): Blog[] {
-        return db.blogs
+    async findAll(): Promise<WithId<Blog>[] | undefined> {
+        return blogsCollection.find().toArray()
     },
-    findById(id: string): Blog | undefined {
-        return db.blogs.find((b) => b.id === id)
+    async findById(id: string): Promise<WithId<Blog> | null> {
+        return blogsCollection.findOne({ _id: new ObjectId(id) })
     },
-    create(blog: Blog): void {
-        db.blogs.push(blog)
+    async create(blog: Blog): Promise<WithId<Blog>> {
+        const result = await blogsCollection.insertOne(blog)
+        return { ...blog, _id: result.insertedId }
     },
-    update(blog: Blog): void {
-        const foundIndex = db.blogs.findIndex((b) => b.id === blog.id)
-        if (foundIndex === -1) {
+    async update({id, blog}: {id: string, blog: Blog}): Promise<void> {
+        const result = await blogsCollection.updateOne(
+            { _id: new ObjectId(id) },
+            { $set: blog }
+        )
+        if (result.matchedCount === 0) {
             throw new Error('Blog not found')
         }
-        db.blogs[foundIndex] = blog
     },
-    delete(id: string): void {
-        const foundIndex = db.blogs.findIndex((b) => b.id === id)
-        if (foundIndex === -1) {
+    async delete(id: string): Promise<void> {
+        const deletedResult = await blogsCollection.deleteOne({ _id: new ObjectId(id) })
+        if (deletedResult.deletedCount === 0) {
             throw new Error('Blog not found')
         }
-        db.blogs.splice(foundIndex, 1)
     },
 }

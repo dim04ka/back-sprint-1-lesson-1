@@ -1,28 +1,32 @@
-import { db } from '../../db'
+import { postsCollection } from '../../db/mongo.db'
 import { Post } from '../dto'
+import { ObjectId, WithId } from 'mongodb'
 
 export const postsRepository = {
-    findAll(): Post[] {
-        return db.posts
+    async findAll(): Promise<WithId<Post>[] | undefined> {
+        return postsCollection.find().toArray()
     },
-    findById(id: string): Post | undefined {
-        return db.posts.find((p) => p.id === id)
+    async findById(id: string): Promise<WithId<Post> | null> {
+        return postsCollection.findOne({ _id: new ObjectId(id) })
+
     },
-    create(post: Post): void {
-        db.posts.push(post)
+    async create(post: Post): Promise<WithId<{ createdAt: string }>> {
+        const createdAt = new Date().toISOString();
+        const postWithCreatedAt = { ...post, createdAt };
+        const result = await postsCollection.insertOne(postWithCreatedAt);
+
+        return { _id: result.insertedId, createdAt };
     },
-    update(post: Post): void {
-        const foundIndex = db.posts.findIndex((p) => p.id === post.id)
-        if (foundIndex === -1) {
-            throw new Error('Post not found')
+    async delete(id: string): Promise<void> {
+        const result = await postsCollection.deleteOne({ _id: new ObjectId(id) });
+        if (result.deletedCount === 0) {
+            throw new Error('Post not found');
         }
-        db.posts[foundIndex] = post
     },
-    delete(id: string): void {
-        const foundIndex = db.posts.findIndex((p) => p.id === id)
-        if (foundIndex === -1) {
-            throw new Error('Post not found')
+    async update({id, post}: {id: string, post: Post}): Promise<void> {
+        const result = await postsCollection.updateOne({ _id: new ObjectId(id) }, { $set: post });
+        if (result.matchedCount === 0) {
+            throw new Error('Post not found');
         }
-        db.posts.splice(foundIndex, 1)
     },
 }
