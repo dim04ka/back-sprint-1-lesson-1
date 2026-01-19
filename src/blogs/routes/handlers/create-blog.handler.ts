@@ -25,7 +25,7 @@ export const createBlogHandler = async (
         description,
         websiteUrl,
         createdAt: new Date().toISOString(),
-        isMembership: true,
+        isMembership: false,
     }
 
     res.status(HttpStatus.Created).send(responseBlog)
