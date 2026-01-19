@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { Blog } from '../../dto'
+import { Blog, BlogViewModel } from '../../dto'
 import { blogsRepository } from '../../repository'
 import { HttpStatus } from '../../../core/types/http-statuses'
 
@@ -8,15 +8,25 @@ export const createBlogHandler = async (
     res: Response
 ): Promise<void> => {
 
+    const { name, description, websiteUrl } = req.body
     const newBlog: Blog = {
-        name: req.body.name,
-        description: req.body.description,
-        websiteUrl: req.body.websiteUrl,
+        name,
+        description,
+        websiteUrl,
         createdAt: new Date().toISOString(),
-        isMembership: false,
+        isMembership: true,
     }
 
-    const createdBlog = await blogsRepository.create(newBlog)
+    const { id } = await blogsRepository.create(newBlog)
 
-    res.status(HttpStatus.Created).send(createdBlog)
+    const responseBlog: BlogViewModel = {
+        id,
+        name,
+        description,
+        websiteUrl,
+        createdAt: new Date().toISOString(),
+        isMembership: true,
+    }
+
+    res.status(HttpStatus.Created).send(responseBlog)
 }

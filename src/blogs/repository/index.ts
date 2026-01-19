@@ -9,10 +9,10 @@ export const blogsRepository = {
     async findById(id: string): Promise<WithId<Blog> | null> {
         return blogsCollection.findOne({ _id: new ObjectId(id) })
     },
-    async create(blog: Blog): Promise<BlogViewModel> {
+    async create(blog: Blog): Promise<{ id: string }> {
    
         const result = await blogsCollection.insertOne(blog)
-        return { ...blog, id: result.insertedId.toString() }
+        return { id: result.insertedId.toString() }
     },
     async update({id, blog}: {id: string, blog: Blog}): Promise<void> {
         const result = await blogsCollection.updateOne(
