@@ -1,18 +1,27 @@
-import express from 'express'
+import express, { Express } from 'express'
 import { setupApp } from './setup-app'
 import { runDB } from './db/mongo.db'
 
 import dotenv from 'dotenv'
 dotenv.config()
 
-const bootstrap = async () => {
-    const app = express()
+let app: Express | null = null
+let isInitialized = false
+
+const bootstrap = async (): Promise<Express> => {
+    if (app && isInitialized) {
+        return app
+    }
+
+    app = express()
 
     setupApp(app)
 
     await runDB(
         process.env.MONGO_CONNECT_URL || ''
     )
+
+    isInitialized = true
 
     // запуск сервера для локальной разработки (не на Vercel)
     if (
@@ -28,6 +37,13 @@ const bootstrap = async () => {
     return app
 }
 
+// Экспорт для Vercel serverless функции
+export default async (req: express.Request, res: express.Response) => {
+    const initializedApp = await bootstrap()
+    return initializedApp(req, res)
+}
 
-
-bootstrap()
+// Для локальной разработки
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+    bootstrap()
+}
