@@ -1,6 +1,6 @@
 import { ObjectId, WithId } from 'mongodb'
 import { blogsCollection } from '../../db/mongo.db'
-import { Blog } from '../dto'
+import { Blog, BlogViewModel } from '../dto'
 
 export const blogsRepository = {
     async findAll(): Promise<WithId<Blog>[] | undefined> {
@@ -9,9 +9,10 @@ export const blogsRepository = {
     async findById(id: string): Promise<WithId<Blog> | null> {
         return blogsCollection.findOne({ _id: new ObjectId(id) })
     },
-    async create(blog: Blog): Promise<WithId<Blog>> {
+    async create(blog: Blog): Promise<BlogViewModel> {
+   
         const result = await blogsCollection.insertOne(blog)
-        return { ...blog, _id: result.insertedId }
+        return { ...blog, id: result.insertedId.toString() }
     },
     async update({id, blog}: {id: string, blog: Blog}): Promise<void> {
         const result = await blogsCollection.updateOne(
