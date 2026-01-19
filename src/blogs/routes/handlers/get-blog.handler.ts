@@ -1,6 +1,8 @@
 import { Request, Response } from 'express'
 import { blogsRepository } from '../../repository'
 import { HttpStatus } from '../../../core/types/http-statuses'
+import { BlogViewModel } from '../../dto'
+import { blogViewModelMapper } from '../mapper'
 
 export const getBlogHandler = async (req: Request, res: Response) => {
     const id = req.params.id
@@ -10,5 +12,6 @@ export const getBlogHandler = async (req: Request, res: Response) => {
             .status(HttpStatus.NotFound)
             .send({ message: 'Blog not found' })
     }
-    res.status(HttpStatus.Ok).send(blog)
+    const blogViewModel: BlogViewModel = blogViewModelMapper(blog)
+    res.status(HttpStatus.Ok).send(blogViewModel)
 }
