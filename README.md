@@ -1,19 +1,19 @@
-# Video API
+# Blogger API
 
-REST API для управления видео, построенное на Express и TypeScript. Проект поддерживает полный CRUD функционал для работы с видео, включает Swagger документацию и готов к деплою на Vercel.
+REST API для управления блогами и постами, построенное на Express и TypeScript. Проект поддерживает полный CRUD функционал для работы с блогами и постами, включает Swagger документацию и готов к деплою на Vercel.
 
 ## Описание
 
-API предоставляет возможность управления коллекцией видео с поддержкой различных разрешений, возрастных ограничений и настроек загрузки. Данные хранятся в памяти (in-memory database) для упрощения разработки и тестирования.
+API предоставляет возможность управления коллекцией блогов и постов. Блоги поддерживают пагинацию и сортировку, посты связаны с блогами через blogId. Данные хранятся в MongoDB.
 
 ## Основные возможности
 
-- ✅ CRUD операции для видео (создание, чтение, обновление, удаление)
+- ✅ CRUD операции для блогов (создание, чтение, обновление, удаление)
+- ✅ CRUD операции для постов (создание, чтение, обновление, удаление)
+- ✅ Пагинация и сортировка для списка блогов
 - ✅ Валидация входных данных
 - ✅ Swagger документация API
-- ✅ Поддержка различных разрешений видео (P144, P240, P360, P480, P720, P1080, P1440, P2160)
-- ✅ Возрастные ограничения
-- ✅ Настройка возможности загрузки видео
+- ✅ Защита эндпоинтов через super-admin guard
 - ✅ E2E тестирование
 - ✅ Готовность к деплою на Vercel (serverless функции)
 
@@ -21,6 +21,7 @@ API предоставляет возможность управления ко�
 
 - **Express** - веб-фреймворк для Node.js
 - **TypeScript** - типизированный JavaScript
+- **MongoDB** - база данных
 - **Swagger** - документация API
 - **Jest** - фреймворк для тестирования
 - **ESLint & Prettier** - линтинг и форматирование кода
@@ -58,34 +59,67 @@ node dist/index.js
 
 ## API Endpoints
 
-### Видео
+### Блоги
 
-- `GET /api/videos` - получить все видео
-- `GET /api/videos/:id` - получить видео по ID
-- `POST /api/videos` - создать новое видео
-- `PUT /api/videos/:id` - обновить видео
-- `DELETE /api/videos/:id` - удалить видео
+- `GET /blogs` - получить список блогов (с пагинацией и сортировкой)
+- `GET /blogs/:id` - получить блог по ID
+- `POST /blogs` - создать новый блог (требует super-admin)
+- `PUT /blogs/:id` - обновить блог (требует super-admin)
+- `DELETE /blogs/:id` - удалить блог (требует super-admin)
+
+**Параметры запроса для GET /blogs:**
+- `pageNumber` - номер страницы (по умолчанию: 1)
+- `pageSize` - размер страницы (по умолчанию: 10)
+- `sortBy` - поле для сортировки (createdAt, isMembership, name)
+- `sortDirection` - направление сортировки (asc, desc)
+
+### Посты
+
+- `GET /posts` - получить список постов
+- `GET /posts/:id` - получить пост по ID
+- `POST /posts` - создать новый пост (требует super-admin)
+- `PUT /posts/:id` - обновить пост (требует super-admin)
+- `DELETE /posts/:id` - удалить пост (требует super-admin)
 
 ### Тестирование
 
-- `DELETE /api/testing/all-data` - очистить все данные (для тестирования)
+- `DELETE /testing/all-data` - очистить все данные (для тестирования)
 
 ### Документация
 
-- `GET /api-docs` - Swagger UI документация
+- `GET /api` - Swagger UI документация
 
 ## Структура проекта
 
 ```
 src/
-├── core/
-│   └── swagger/          # Конфигурация Swagger
-├── db/                   # In-memory база данных
-├── routes/               # Маршруты API
-│   ├── videos.ts        # Роуты для видео
-│   └── testing.ts       # Роуты для тестирования
-├── types/                # TypeScript типы
-├── utils/                # Утилиты и валидация
+├── blogs/                # Модуль блогов
+│   ├── application/     # Бизнес-логика
+│   ├── domain/          # Доменные типы
+│   ├── repository/      # Репозиторий для работы с БД
+│   └── routes/          # Роуты и обработчики
+│       ├── handlers/    # Обработчики запросов
+│       ├── input/       # Типы входных данных
+│       ├── mapper/      # Маппинг данных
+│       ├── output/      # Типы выходных данных
+│       └── validate/    # Валидация
+├── posts/               # Модуль постов
+│   ├── dto/             # Data Transfer Objects
+│   ├── mapper/          # Маппинг данных
+│   ├── repository/      # Репозиторий для работы с БД
+│   └── routes/          # Роуты и обработчики
+│       ├── handlers/    # Обработчики запросов
+│       └── validate/    # Валидация
+├── core/                # Ядро приложения
+│   ├── errors/          # Обработка ошибок
+│   ├── helpers/         # Вспомогательные функции
+│   ├── middlewares/     # Middleware (валидация, guards)
+│   ├── path/            # Константы путей
+│   ├── swagger/         # Конфигурация Swagger
+│   └── types/           # Общие типы
+├── db/                  # Работа с базой данных
+│   └── mongo.db/        # Подключение к MongoDB
+├── testing/             # Роуты для тестирования
 ├── index.ts             # Точка входа приложения
 └── setup-app.ts         # Настройка Express приложения
 ```
@@ -111,33 +145,64 @@ pnpm format
 
 Проект настроен для деплоя на Vercel через serverless функции. Конфигурация находится в файле `vercel.json`.
 
+## Переменные окружения
+
+Создайте файл `.env` в корне проекта со следующими переменными:
+
+```env
+MONGO_CONNECT_URL=mongodb://localhost:27017
+MONGO_DB_NAME=blogger
+PORT=5001
+NODE_ENV=development
+```
+
 ## Примеры использования
 
-### Создание видео
+### Создание блога
 
 ```bash
-POST /api/videos
+POST /blogs
 Content-Type: application/json
+Authorization: Basic <super-admin-credentials>
 
 {
-  "title": "Название видео",
-  "author": "Автор",
-  "availableResolutions": ["P144", "P240", "P360"]
+  "name": "Мой блог",
+  "description": "Описание моего блога",
+  "websiteUrl": "https://example.com"
 }
 ```
 
-### Обновление видео
+### Получение списка блогов с пагинацией и сортировкой
 
 ```bash
-PUT /api/videos/1
+GET /blogs?pageNumber=1&pageSize=10&sortBy=createdAt&sortDirection=desc
+```
+
+### Обновление блога
+
+```bash
+PUT /blogs/:id
 Content-Type: application/json
+Authorization: Basic <super-admin-credentials>
 
 {
-  "title": "Обновленное название",
-  "author": "Автор",
-  "availableResolutions": ["P720", "P1080"],
-  "canBeDownloaded": true,
-  "minAgeRestriction": 18,
-  "publicationDate": "2024-01-01T00:00:00.000Z"
+  "name": "Обновленное название",
+  "description": "Обновленное описание",
+  "websiteUrl": "https://updated-example.com"
+}
+```
+
+### Создание поста
+
+```bash
+POST /posts
+Content-Type: application/json
+Authorization: Basic <super-admin-credentials>
+
+{
+  "title": "Заголовок поста",
+  "shortDescription": "Краткое описание поста",
+  "content": "Полное содержание поста",
+  "blogId": "blog-id-here"
 }
 ```
