@@ -1,10 +1,12 @@
 import { Request, Response } from 'express'
 import { HttpStatus } from '../../../core/types/http-statuses'
-import { blogsRepository } from '../../repository'
-import { Blog } from '../../dto'
+import { blogsRepository } from '../../repository/blogs.repository'
+import { Blog } from '../../domain'
 
-
-export const updateBlogHandler = async (req: Request, res: Response) => {
+export const updateBlogHandler = async (
+    req: Request,
+    res: Response
+) => {
     const id = req.params.id
     const blog = await blogsRepository.findById(id)
     if (!blog) {
@@ -19,6 +21,6 @@ export const updateBlogHandler = async (req: Request, res: Response) => {
         description,
         websiteUrl,
     }
-    await blogsRepository.update({id, blog: updatedBlog})
+    await blogsRepository.update({ id, blog: updatedBlog })
     res.sendStatus(HttpStatus.NoContent)
 }

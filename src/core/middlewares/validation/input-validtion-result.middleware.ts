@@ -1,32 +1,52 @@
 import {
-    validationResult,
-    ValidationError,
     FieldValidationError,
+    ValidationError,
+    validationResult,
 } from 'express-validator'
-import { Request, Response, NextFunction } from 'express'
+import { NextFunction, Request, Response } from 'express'
+import { ValidationErrorType } from '../../types/validationError'
 import { HttpStatus } from '../../types/http-statuses'
+import { ValidationErrorListOutput } from '../../types/validationError.dto'
 
-const formatErrors = (error: ValidationError) => {
+export const createErrorMessages = (
+    errors: ValidationErrorType[]
+): ValidationErrorListOutput => {
     return {
-        field: (error as FieldValidationError).path!, // Поле с ошибкой
-        message: error.msg, // Сообщение ошибки
+        errors: errors.map((error) => ({
+            status: error.status,
+            detail: error.detail, //error message
+            source: { pointer: error.source ?? '' }, //error field
+            code: error.code ?? null, //domain error code
+        })),
+    }
+}
+
+const formaValidationError = (
+    error: ValidationError
+): ValidationErrorType => {
+    const expressError = error as unknown as FieldValidationError
+
+    return {
+        status: HttpStatus.BadRequest,
+        source: expressError.path,
+        detail: expressError.msg,
     }
 }
 
 export const inputValidationResultMiddleware = (
-    req: Request,
+    req: Request<{}, {}, {}, {}>,
     res: Response,
     next: NextFunction
 ) => {
     const errors = validationResult(req)
-        .formatWith(formatErrors)
+        .formatWith(formaValidationError)
         .array({ onlyFirstError: true })
 
-    if (errors.length) {
-        return res
-            .status(HttpStatus.BadRequest)
-            .json({ errorsMessages: errors })
+    if (errors.length > 0) {
+        res.status(HttpStatus.BadRequest).json(
+            createErrorMessages(errors)
+        )
+        return
     }
-
-    next() // Если ошибок нет, передаём управление дальше
+    next()
 }

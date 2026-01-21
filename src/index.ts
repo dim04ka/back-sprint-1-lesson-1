@@ -17,9 +17,7 @@ const bootstrap = async (): Promise<Express> => {
 
     setupApp(app)
 
-    await runDB(
-        process.env.MONGO_CONNECT_URL || ''
-    )
+    await runDB(process.env.MONGO_CONNECT_URL || '')
 
     isInitialized = true
 
@@ -38,7 +36,10 @@ const bootstrap = async (): Promise<Express> => {
 }
 
 // Экспорт для Vercel serverless функции
-export default async (req: express.Request, res: express.Response) => {
+export default async (
+    req: express.Request,
+    res: express.Response
+) => {
     const initializedApp = await bootstrap()
     return initializedApp(req, res)
 }

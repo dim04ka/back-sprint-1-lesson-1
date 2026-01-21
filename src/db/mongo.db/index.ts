@@ -2,7 +2,7 @@ import { Collection, Db, MongoClient } from 'mongodb'
 
 import dotenv from 'dotenv'
 import { PostViewModel } from '../../posts/dto'
-import { Blog } from '../../blogs/dto'
+import { Blog } from '../../blogs/domain'
 dotenv.config()
 
 const POSTS_COLLECTION_NAME = 'posts'
@@ -19,7 +19,9 @@ export async function runDB(url: string): Promise<void> {
 
     // Инициализация коллекций
     blogsCollection = db.collection<Blog>(BLOGS_COLLECTION_NAME)
-    postsCollection = db.collection<PostViewModel>(POSTS_COLLECTION_NAME);
+    postsCollection = db.collection<PostViewModel>(
+        POSTS_COLLECTION_NAME
+    )
 
     try {
         console.log('Connecting to the database...')

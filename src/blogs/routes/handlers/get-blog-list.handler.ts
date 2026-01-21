@@ -1,19 +1,37 @@
 import { Request, Response } from 'express'
-import { blogsRepository } from '../../repository'
 import { HttpStatus } from '../../../core/types/http-statuses'
-import { BlogViewModel } from '../../dto'
-import { blogViewModelMapper } from '../mapper'
+import { blogsService } from '../../application/blogs.service'
+import { BlogQueryInput } from '../input/blog-query.input'
+import { matchedData } from 'express-validator'
+import { setDefaultSortAndPaginationIfNotExist } from '../../../core/helpers/set-default-sort-and-pagination'
+import { mapToBlogListPaginatedOutput } from '../mapper/map-to-blog-list-paginated-output.util'
 
 export const getBlogListHandler = async (
-    _: Request,
+    req: Request<{}, {}, {}, BlogQueryInput>,
     res: Response
 ) => {
-    const blogs = await blogsRepository.findAll()
-    if (!blogs) {
+    try {
+        const sanitizedQuery = matchedData<BlogQueryInput>(req, {
+            locations: ['query'],
+            includeOptionals: true,
+        })
+
+        const queryInput =
+            setDefaultSortAndPaginationIfNotExist(sanitizedQuery)
+
+        const { items, totalCount } =
+            await blogsService.findMany(queryInput)
+
+        const blogListOutput = mapToBlogListPaginatedOutput(items, {
+            pageNumber: queryInput.pageNumber,
+            pageSize: queryInput.pageSize,
+            totalCount,
+        })
+
+        res.status(HttpStatus.Ok).send(blogListOutput)
+    } catch (error) {
         return res
-            .status(HttpStatus.NotFound)
-            .send({ message: 'Blogs not found' })
+            .status(HttpStatus.InternalServerError)
+            .send({ message: 'Internal server error' })
     }
-    const blogsViewModel: BlogViewModel[] = blogs.map(blogViewModelMapper)
-    res.status(HttpStatus.Ok).send(blogsViewModel)
 }

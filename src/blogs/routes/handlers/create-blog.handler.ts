@@ -1,13 +1,12 @@
 import { Request, Response } from 'express'
-import { Blog, BlogViewModel } from '../../dto'
-import { blogsRepository } from '../../repository'
+import { Blog, BlogViewModel } from '../../domain'
+import { blogsRepository } from '../../repository/blogs.repository'
 import { HttpStatus } from '../../../core/types/http-statuses'
 
 export const createBlogHandler = async (
     req: Request,
     res: Response
 ): Promise<void> => {
-
     const { name, description, websiteUrl } = req.body
 
     const additionalBlogData = {
@@ -18,7 +17,7 @@ export const createBlogHandler = async (
         name,
         description,
         websiteUrl,
-       ...additionalBlogData,
+        ...additionalBlogData,
     }
 
     const { id } = await blogsRepository.create(newBlog)

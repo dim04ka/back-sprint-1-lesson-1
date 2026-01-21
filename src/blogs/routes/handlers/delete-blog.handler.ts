@@ -1,8 +1,11 @@
 import { Request, Response } from 'express'
 import { HttpStatus } from '../../../core/types/http-statuses'
-import { blogsRepository } from '../../repository'
+import { blogsRepository } from '../../repository/blogs.repository'
 
-export const deleteBlogHandler = async (req: Request, res: Response) => {
+export const deleteBlogHandler = async (
+    req: Request,
+    res: Response
+) => {
     const id = req.params.id
     const blog = await blogsRepository.findById(id)
     if (!blog) {

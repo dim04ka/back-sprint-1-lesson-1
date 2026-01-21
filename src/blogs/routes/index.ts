@@ -2,7 +2,9 @@ import { Router } from 'express'
 import {
     idValidation,
     inputValidationResultMiddleware,
+    paginationAndSortingValidation,
 } from '../../core/middlewares/validation'
+import { BlogSortFields } from './input/blog-sort.input'
 
 import { createBlogValidationMiddleware } from './validate'
 import { superAdminGuardMiddleware } from '../../core/middlewares/super-admin.guard-middleware'
@@ -16,7 +18,12 @@ import {
 
 export const blogsRouter = Router()
 
-blogsRouter.get('', getBlogListHandler)
+blogsRouter.get(
+    '',
+    paginationAndSortingValidation(BlogSortFields),
+    inputValidationResultMiddleware,
+    getBlogListHandler
+)
 blogsRouter.get(
     '/:id',
     idValidation,

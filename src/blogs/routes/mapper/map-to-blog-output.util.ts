@@ -1,7 +1,10 @@
-import { Blog, BlogViewModel } from "../../dto"
-import { WithId } from "mongodb"
+import { WithId } from 'mongodb'
+import { Blog } from '../../domain'
+import { BlogDataOutput } from '../output /blog-data.output'
 
-export const blogViewModelMapper = (blog: WithId<Blog>): BlogViewModel => {
+export const mapToBlogOutput = (
+    blog: WithId<Blog>
+): BlogDataOutput => {
     return {
         id: blog._id.toString(),
         name: blog.name,

@@ -2,9 +2,12 @@ import { Request, Response } from 'express'
 import { HttpStatus } from '../../../core/types/http-statuses'
 import { postsRepository } from '../../repository'
 import { CreatePost } from '../../dto'
-import { blogsRepository } from '../../../blogs/repository'
+import { blogsRepository } from '../../../blogs/repository/blogs.repository'
 
-export const updatePostHandler = async (req: Request, res: Response) => {
+export const updatePostHandler = async (
+    req: Request,
+    res: Response
+) => {
     const id = req.params.id
     const post = await postsRepository.findById(id)
     if (!post) {
@@ -26,6 +29,6 @@ export const updatePostHandler = async (req: Request, res: Response) => {
         content,
         blogId,
     }
-    await postsRepository.update({id, post: updatedPost})
+    await postsRepository.update({ id, post: updatedPost })
     res.sendStatus(HttpStatus.NoContent)
 }

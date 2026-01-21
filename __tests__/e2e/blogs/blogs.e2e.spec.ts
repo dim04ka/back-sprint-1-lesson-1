@@ -11,29 +11,28 @@ dotenv.config()
 
 export async function clearDb(app: Express) {
     await request(app)
-      .delete(`${ROUTES.TESTING}/all-data`)
-      .expect(HttpStatus.NoContent);
-    return;
-  }
+        .delete(`${ROUTES.TESTING}/all-data`)
+        .expect(HttpStatus.NoContent)
+    return
+}
 
 describe('Blogs API', () => {
     const app = express()
     setupApp(app)
 
-
     beforeAll(async () => {
-        await runDB(process.env.MONGO_CONNECT_URL || '');
-        await clearDb(app);
-      });
+        await runDB(process.env.MONGO_CONNECT_URL || '')
+        await clearDb(app)
+    })
 
     // GET /blogs
     it('should return all blogs', async () => {
         const res = await request(app).get(`${ROUTES.BLOGS}`)
         expect(res.status).toBe(HttpStatus.Ok)
-        expect(res.body).toEqual(await blogsCollection.find().toArray())
+        expect(res.body).toEqual(
+            await blogsCollection.find().toArray()
+        )
     })
-
-
 
     it('should create a new blog', async () => {
         const newBlog = {
@@ -48,13 +47,12 @@ describe('Blogs API', () => {
         expect(res.status).toBe(HttpStatus.Created)
     })
 
-
-        // // GET /blogs/:id
-        // it('should return a blog by id', async () => {
-        //     const res = await request(app).get(`${ROUTES.BLOGS}/1`)
-        //     expect(res.status).toBe(HttpStatus.Ok)
-        //     expect(res.body).toEqual(await blogsCollection.findOne({ _id: new ObjectId(1) }))
-        // })
+    // // GET /blogs/:id
+    // it('should return a blog by id', async () => {
+    //     const res = await request(app).get(`${ROUTES.BLOGS}/1`)
+    //     expect(res.status).toBe(HttpStatus.Ok)
+    //     expect(res.body).toEqual(await blogsCollection.findOne({ _id: new ObjectId(1) }))
+    // })
 
     // it('should update a blog', async () => {
     //     const updatedBlog = {
