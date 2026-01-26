@@ -72,5 +72,6 @@ export const blogsRepository = {
         if (deletedResult.deletedCount === 0) {
             throw new Error('Blog not found')
         }
+        return
     },
 }

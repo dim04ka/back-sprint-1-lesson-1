@@ -6,7 +6,8 @@ import {
 } from '../../core/middlewares/validation'
 import { BlogSortFields } from './input/blog-sort.input'
 
-import { createBlogValidationMiddleware } from './validate'
+import { createBlogValidationMiddleware } from './input/blog-create.input-dto.validation-middlewares'
+import { updateBlogValidationMiddleware } from './input/blog-update.input-dto.validation-middlewares'
 import { superAdminGuardMiddleware } from '../../core/middlewares/super-admin.guard-middleware'
 import {
     getBlogHandler,
@@ -41,7 +42,7 @@ blogsRouter.put(
     '/:id',
     superAdminGuardMiddleware,
     idValidation,
-    createBlogValidationMiddleware,
+    updateBlogValidationMiddleware,
     inputValidationResultMiddleware,
     updateBlogHandler
 )

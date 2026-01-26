@@ -14,9 +14,16 @@ import {
     deletePostHandler,
 } from './handlers'
 
+import { paginationAndSortingValidation } from '../../core/middlewares/validation'
+import { PostSortFields } from './input/post-sort.input'
 export const postsRouter = Router()
 
-postsRouter.get('', getPostListHandler)
+postsRouter.get(
+    '',
+    paginationAndSortingValidation(PostSortFields),
+    inputValidationResultMiddleware,
+    getPostListHandler
+)
 postsRouter.get(
     '/:id',
     idValidation,

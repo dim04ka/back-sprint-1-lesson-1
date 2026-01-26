@@ -1,10 +1,10 @@
-// export type Post = {
-//     id: string
-//     title: string
-//     shortDescription: string
-//     content: string
-
-// }
+export type Post = {
+    title: string
+    shortDescription: string
+    content: string
+    blogId: string
+    createdAt: string
+}
 
 export type FullPost = {
     id: string

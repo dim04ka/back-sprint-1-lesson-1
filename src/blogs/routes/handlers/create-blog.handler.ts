@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { Blog, BlogViewModel } from '../../domain'
-import { blogsRepository } from '../../repository/blogs.repository'
 import { HttpStatus } from '../../../core/types/http-statuses'
+import { blogsService } from '../../application/blogs.service'
 
 export const createBlogHandler = async (
     req: Request,
@@ -20,7 +20,7 @@ export const createBlogHandler = async (
         ...additionalBlogData,
     }
 
-    const { id } = await blogsRepository.create(newBlog)
+    const { id } = await blogsService.create(newBlog)
 
     const responseBlog: BlogViewModel = {
         id,

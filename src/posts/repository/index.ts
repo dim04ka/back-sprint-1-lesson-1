@@ -1,24 +1,111 @@
 import { postsCollection } from '../../db/mongo.db'
-import { CreatePost, PostViewModel } from '../dto'
+import { CreatePost, Post, PostViewModel } from '../dto'
 import { ObjectId, WithId } from 'mongodb'
+import { PostQueryInput } from '../routes/input/post-query.input'
+import { RepositoryNotFoundError } from '../../core/errors/repository-not-found.error'
 
 export const postsRepository = {
-    async findAll(): Promise<WithId<PostViewModel>[] | undefined> {
-        return postsCollection.find().toArray()
+    async findManyWithBlogName(
+        queryDto: PostQueryInput & { postId?: string }
+    ): Promise<{
+        items: WithId<PostViewModel>[]
+        totalCount: number
+    }> {
+        const { pageNumber, pageSize, sortBy, sortDirection } =
+            queryDto
+
+        const skip = (pageNumber - 1) * pageSize
+        const sortDirectionNumber = sortDirection === 'asc' ? 1 : -1
+
+        const filter: any = {}
+        if (queryDto.postId) {
+            filter._id = new ObjectId(queryDto.postId)
+        }
+
+        const pipeline = [
+            {
+                $match: filter,
+            },
+            {
+                $lookup: {
+                    from: 'blogs',
+                    let: { blogId: { $toObjectId: '$blogId' } },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { $eq: ['$_id', '$$blogId'] },
+                            },
+                        },
+                        {
+                            $project: {
+                                name: 1,
+                            },
+                        },
+                    ],
+                    as: 'blog',
+                },
+            },
+            {
+                $unwind: {
+                    path: '$blog',
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            {
+                $project: {
+                    _id: 1,
+                    title: 1,
+                    shortDescription: 1,
+                    content: 1,
+                    blogId: 1,
+                    blogName: { $ifNull: ['$blog.name', ''] },
+                    createdAt: 1,
+                },
+            },
+            {
+                $facet: {
+                    items: [
+                        { $sort: { [sortBy]: sortDirectionNumber } },
+                        { $skip: skip },
+                        { $limit: pageSize },
+                    ],
+                    totalCount: [{ $count: 'count' }],
+                },
+            },
+        ]
+
+        const result = await postsCollection
+            .aggregate(pipeline)
+            .toArray()
+
+        const items = result[0]?.items || []
+        const totalCount = result[0]?.totalCount[0]?.count || 0
+
+        return {
+            items: items.map((item: any) => ({
+                ...item,
+                id: item._id.toString(),
+            })) as WithId<PostViewModel>[],
+            totalCount,
+        }
     },
-    async findById(
-        id: string
-    ): Promise<WithId<PostViewModel> | null> {
-        return postsCollection.findOne({ _id: new ObjectId(id) })
+    async findById(id: string): Promise<WithId<Post>> {
+        const res = await postsCollection.findOne({
+            _id: new ObjectId(id),
+        })
+        if (!res) {
+            throw new RepositoryNotFoundError('Post not exist')
+        }
+        return res
     },
     async create(
         post: CreatePost & { createdAt: string }
-    ): Promise<string> {
+    ): Promise<{ id: string }> {
         const result = await postsCollection.insertOne(
             post as PostViewModel
         )
 
-        return result.insertedId.toString()
+        return { id: result.insertedId.toString() }
     },
     async delete(id: string): Promise<void> {
         const result = await postsCollection.deleteOne({

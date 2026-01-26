@@ -30,9 +30,3 @@ export const websiteUrlValidation = body('websiteUrl')
     .withMessage('Website URL must be a valid URL')
     .isLength({ min: 1, max: 100 })
     .withMessage('Website URL must be between 1 and 100 characters')
-
-export const createBlogValidationMiddleware = [
-    nameValidation,
-    descriptionValidation,
-    websiteUrlValidation,
-]

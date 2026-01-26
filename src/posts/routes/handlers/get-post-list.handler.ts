@@ -1,36 +1,42 @@
 import { Request, Response } from 'express'
-import { postsRepository } from '../../repository'
+
 import { HttpStatus } from '../../../core/types/http-statuses'
-import { PostViewModel } from '../../dto'
-import { postViewModelMapper } from '../../mapper'
-import { blogsRepository } from '../../../blogs/repository/blogs.repository'
+
+import { PostQueryInput } from '../input/post-query.input'
+import { matchedData } from 'express-validator'
+import { setDefaultSortAndPaginationIfNotExist } from '../../../core/helpers/set-default-sort-and-pagination'
+import { postService } from '../../application/post.service'
+
+import { mapToPostListPaginatedOutput } from '../mapper/map-to-post-list-paginated-output'
+import { errorsHandler } from '../../../core/errors/errors.handler'
 
 export const getPostListHandler = async (
-    _: Request,
+    req: Request<{}, {}, {}, PostQueryInput>,
     res: Response
 ) => {
-    const posts = await postsRepository.findAll()
-    if (!posts) {
-        return res
-            .status(HttpStatus.NotFound)
-            .send({ message: 'Posts not found' })
-    }
-    const blogs = await blogsRepository.findAll()
-    if (!blogs) {
-        return res
-            .status(HttpStatus.NotFound)
-            .send({ message: 'Blogs not found' })
-    }
-    const postsWithBlogName: PostViewModel[] = posts
-        .map((post) => {
-            const blog = blogs.find(
-                (blog) => blog._id.toString() === post.blogId
-            )
-            if (!blog) {
-                return undefined
-            }
-            return postViewModelMapper(post, blog!)
+    try {
+        const sanitizedQuery = matchedData<PostQueryInput>(req, {
+            locations: ['query'],
+            includeOptionals: true,
         })
-        .filter((post) => post !== undefined)
-    res.status(HttpStatus.Ok).send(postsWithBlogName)
+
+        const queryInput =
+            setDefaultSortAndPaginationIfNotExist(sanitizedQuery)
+
+        const { items, totalCount } =
+            await postService.findManyWithBlogName(queryInput)
+
+        const postListOutput = mapToPostListPaginatedOutput(items, {
+            pageNumber: queryInput.pageNumber,
+            pageSize: queryInput.pageSize,
+            totalCount,
+        })
+
+        res.status(HttpStatus.Ok).send({
+            items: postListOutput.items,
+            ...postListOutput.meta,
+        })
+    } catch (e: unknown) {
+        errorsHandler(e, res)
+    }
 }

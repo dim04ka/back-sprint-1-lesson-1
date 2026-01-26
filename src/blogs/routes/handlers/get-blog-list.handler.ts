@@ -28,7 +28,10 @@ export const getBlogListHandler = async (
             totalCount,
         })
 
-        res.status(HttpStatus.Ok).send(blogListOutput)
+        res.status(HttpStatus.Ok).send({
+            items: blogListOutput.data,
+            ...blogListOutput.meta,
+        })
     } catch (error) {
         return res
             .status(HttpStatus.InternalServerError)

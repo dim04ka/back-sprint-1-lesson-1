@@ -12,4 +12,12 @@ export const blogsService = {
     async findById(id: string): Promise<WithId<Blog>> {
         return blogsRepository.findById(id)
     },
+    async delete(id: string): Promise<void> {
+        await blogsRepository.delete(id)
+        return
+    },
+
+    async create(blog: Blog): Promise<{ id: string }> {
+        return await blogsRepository.create(blog)
+    },
 }
