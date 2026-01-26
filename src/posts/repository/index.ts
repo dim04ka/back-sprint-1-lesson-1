@@ -6,7 +6,10 @@ import { RepositoryNotFoundError } from '../../core/errors/repository-not-found.
 
 export const postsRepository = {
     async findManyWithBlogName(
-        queryDto: PostQueryInput & { postId?: string }
+        queryDto: PostQueryInput & {
+            postId?: string
+            blogId?: string
+        }
     ): Promise<{
         items: WithId<PostViewModel>[]
         totalCount: number
@@ -20,6 +23,9 @@ export const postsRepository = {
         const filter: any = {}
         if (queryDto.postId) {
             filter._id = new ObjectId(queryDto.postId)
+        }
+        if (queryDto.blogId) {
+            filter.blogId = queryDto.blogId
         }
 
         const pipeline = [

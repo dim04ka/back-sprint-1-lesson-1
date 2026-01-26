@@ -8,7 +8,10 @@ export const postService = {
         return postsRepository.findById(id)
     },
     async findManyWithBlogName(
-        queryDto: PostQueryInput & { postId?: string }
+        queryDto: PostQueryInput & {
+            postId?: string
+            blogId?: string
+        }
     ): Promise<{
         items: WithId<PostViewModel>[]
         totalCount: number
