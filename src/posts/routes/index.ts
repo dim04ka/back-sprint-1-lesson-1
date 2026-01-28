@@ -20,7 +20,7 @@ export const postsRouter = Router()
 
 postsRouter.get(
     '',
-    paginationAndSortingValidation(PostSortFields),
+    // paginationAndSortingValidation(PostSortFields),
     inputValidationResultMiddleware,
     getPostListHandler
 )
