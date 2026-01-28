@@ -21,6 +21,7 @@ import {
     getBlogPostListHandler,
 } from './handlers'
 import { searchNameTermValidation } from './input/blog-query.validation-middleware'
+import { PostSortFields } from '../../posts/routes/input/post-sort.input'
 
 export const blogsRouter = Router()
 
@@ -58,7 +59,7 @@ blogsRouter.post(
 blogsRouter.get(
     '/:blogId/posts',
     blogIdValidation,
-    paginationAndSortingValidation(BlogSortFields),
+    paginationAndSortingValidation(PostSortFields),
     inputValidationResultMiddleware,
     getBlogPostListHandler
 )
