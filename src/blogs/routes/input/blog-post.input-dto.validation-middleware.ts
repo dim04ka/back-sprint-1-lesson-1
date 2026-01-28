@@ -3,10 +3,10 @@ import {
     shortDescriptionValidation,
     titleValidation,
 } from '../validate/main'
-import { idValidation } from '../../../core/middlewares/validation'
+import { blogIdValidation } from '../../../core/middlewares/validation'
 
 export const createBlogPostValidationMiddleware = [
-    idValidation('blogId'),
+    blogIdValidation,
     titleValidation,
     shortDescriptionValidation,
     contentValidation,

@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import {
     idValidation,
+    blogIdValidation,
     inputValidationResultMiddleware,
     paginationAndSortingValidation,
 } from '../../core/middlewares/validation'
@@ -46,6 +47,7 @@ blogsRouter.get(
 
 blogsRouter.post(
     '/:blogId/posts',
+    superAdminGuardMiddleware,
     createBlogPostValidationMiddleware,
     inputValidationResultMiddleware,
     createBlogPostHandler
@@ -53,6 +55,7 @@ blogsRouter.post(
 
 blogsRouter.get(
     '/:blogId/posts',
+    blogIdValidation,
     paginationAndSortingValidation(BlogSortFields),
     inputValidationResultMiddleware,
     getBlogPostListHandler
