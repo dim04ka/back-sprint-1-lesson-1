@@ -41,13 +41,6 @@ blogsRouter.post(
     createBlogHandler
 )
 
-blogsRouter.get(
-    '/:id',
-    idValidation,
-    inputValidationResultMiddleware,
-    getBlogHandler
-)
-
 blogsRouter.post(
     '/:blogId/posts',
     superAdminGuardMiddleware,
@@ -62,6 +55,13 @@ blogsRouter.get(
     paginationAndSortingValidation(PostSortFields),
     inputValidationResultMiddleware,
     getBlogPostListHandler
+)
+
+blogsRouter.get(
+    '/:id',
+    idValidation,
+    inputValidationResultMiddleware,
+    getBlogHandler
 )
 
 blogsRouter.put(

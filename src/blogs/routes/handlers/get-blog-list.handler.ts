@@ -5,6 +5,7 @@ import { BlogQueryInput } from '../input/blog-query.input'
 import { matchedData } from 'express-validator'
 import { setDefaultSortAndPaginationIfNotExist } from '../../../core/helpers/set-default-sort-and-pagination'
 import { mapToBlogListPaginatedOutput } from '../mapper/map-to-blog-list-paginated-output.util'
+import { errorsHandler } from '../../../core/errors/errors.handler'
 
 export const getBlogListHandler = async (
     req: Request<{}, {}, {}, BlogQueryInput>,
@@ -32,9 +33,7 @@ export const getBlogListHandler = async (
             items: blogListOutput.data,
             ...blogListOutput.meta,
         })
-    } catch (error) {
-        return res
-            .status(HttpStatus.InternalServerError)
-            .send({ message: 'Internal server error' })
+    } catch (e: unknown) {
+        errorsHandler(e, res)
     }
 }

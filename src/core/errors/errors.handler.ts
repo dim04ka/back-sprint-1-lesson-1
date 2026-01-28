@@ -37,6 +37,8 @@ export function errorsHandler(error: unknown, res: Response): void {
         return
     }
 
-    res.status(HttpStatus.InternalServerError)
+    res.status(HttpStatus.InternalServerError).send({
+        message: 'Internal server error',
+    })
     return
 }
