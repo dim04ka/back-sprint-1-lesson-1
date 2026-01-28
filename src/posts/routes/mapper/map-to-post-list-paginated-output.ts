@@ -1,4 +1,3 @@
-import { WithId } from 'mongodb'
 import { PostViewModel } from '../../dto'
 import { PostViewModelListPaginatedOutput } from '../output/post-list-paginated-output'
 
@@ -16,7 +15,7 @@ export const mapToPostListPaginatedOutput = (
             page: meta.pageNumber,
             pageSize: meta.pageSize,
             totalCount: meta.totalCount,
-            pageCount: Math.ceil(meta.totalCount / meta.pageSize),
+            pagesCount: Math.ceil(meta.totalCount / meta.pageSize),
         },
     }
 }

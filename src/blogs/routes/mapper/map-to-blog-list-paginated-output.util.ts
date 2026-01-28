@@ -16,7 +16,7 @@ export const mapToBlogListPaginatedOutput = (
             page: meta.pageNumber,
             pageSize: meta.pageSize,
             totalCount: meta.totalCount,
-            pageCount: Math.ceil(meta.totalCount / meta.pageSize),
+            pagesCount: Math.ceil(meta.totalCount / meta.pageSize),
         },
         data: blogs.map((blog: WithId<Blog>) => {
             return {

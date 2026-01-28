@@ -62,7 +62,7 @@ export const blogsRepository = {
             { $set: blog }
         )
         if (result.matchedCount === 0) {
-            throw new Error('Blog not found')
+            throw new RepositoryNotFoundError('Blog not found')
         }
         return
     },
@@ -71,7 +71,7 @@ export const blogsRepository = {
             _id: new ObjectId(id),
         })
         if (deletedResult.deletedCount === 0) {
-            throw new Error('Blog not found')
+            throw new RepositoryNotFoundError('Blog not found')
         }
         return
     },
