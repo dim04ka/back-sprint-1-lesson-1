@@ -20,12 +20,14 @@ import {
     createBlogPostHandler,
     getBlogPostListHandler,
 } from './handlers'
+import { searchNameTermValidation } from './input/blog-query.validation-middleware'
 
 export const blogsRouter = Router()
 
 blogsRouter.get(
     '',
     paginationAndSortingValidation(BlogSortFields),
+    searchNameTermValidation,
     inputValidationResultMiddleware,
     getBlogListHandler
 )
