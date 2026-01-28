@@ -51,7 +51,7 @@ blogsRouter.post(
 
 blogsRouter.get(
     '/:blogId/posts',
-    // blogIdValidation,
+    blogIdValidation,
     // paginationAndSortingValidation(PostSortFields),
     inputValidationResultMiddleware,
     getBlogPostListHandler
