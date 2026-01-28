@@ -91,7 +91,7 @@ export const postsRepository = {
             items: items.map((item: any) => ({
                 ...item,
                 id: item._id.toString(),
-            })) as WithId<PostViewModel>[],
+            })),
             totalCount,
         }
     },
@@ -118,8 +118,9 @@ export const postsRepository = {
             _id: new ObjectId(id),
         })
         if (result.deletedCount === 0) {
-            throw new Error('Post not found')
+            throw new RepositoryNotFoundError('Post not found')
         }
+        return
     },
     async update({
         id,
@@ -133,7 +134,7 @@ export const postsRepository = {
             { $set: post }
         )
         if (result.matchedCount === 0) {
-            throw new Error('Post not found')
+            throw new RepositoryNotFoundError('Post not found')
         }
     },
 }

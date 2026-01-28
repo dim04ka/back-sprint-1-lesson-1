@@ -14,19 +14,25 @@ export const createPostHandler = async (
         const { title, shortDescription, content, blogId } = req.body
         const blog = await blogsService.findById(blogId)
 
+        const createdAt = new Date().toISOString()
+
         const newPost: CreatePost & { createdAt: string } = {
             title,
             shortDescription,
             content,
             blogId,
-            createdAt: new Date().toISOString(),
+            createdAt,
         }
 
         const { id } = await postService.create(newPost)
 
         const postWithInfo: PostViewModel = {
-            ...newPost,
             id,
+            title,
+            shortDescription,
+            content,
+            blogId,
+            createdAt,
             blogName: blog.name,
         }
 

@@ -7,6 +7,7 @@ import { postService } from '../../../posts/application/post.service'
 import { HttpStatus } from '../../../core/types/http-statuses'
 import { PostQueryInput } from '../../../posts/routes/input/post-query.input'
 import { mapToPostListPaginatedOutput } from '../../../posts/routes/mapper/map-to-post-list-paginated-output'
+import { blogsService } from '../../application/blogs.service'
 
 export const getBlogPostListHandler = async (
     req: Request<{ blogId: string }, {}, {}, BlogPostQueryInput>,
@@ -19,6 +20,7 @@ export const getBlogPostListHandler = async (
             locations: ['query'],
             includeOptionals: true,
         })
+        await blogsService.findById(blogId)
 
         const queryInput = setDefaultSortAndPaginationIfNotExist({
             ...sanitizedQuery,

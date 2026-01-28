@@ -5,8 +5,10 @@ type ValidationErrorOutput = {
     detail: string
     source: { pointer: string }
     code: string | null
+    message: string
+    field: string
 }
 
 export type ValidationErrorListOutput = {
-    errors: ValidationErrorOutput[]
+    errorsMessages: ValidationErrorOutput[]
 }

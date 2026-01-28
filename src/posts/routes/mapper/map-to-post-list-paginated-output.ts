@@ -3,7 +3,7 @@ import { PostViewModel } from '../../dto'
 import { PostViewModelListPaginatedOutput } from '../output/post-list-paginated-output'
 
 export const mapToPostListPaginatedOutput = (
-    items: WithId<PostViewModel>[],
+    items: PostViewModel[],
     meta: {
         pageNumber: number
         pageSize: number

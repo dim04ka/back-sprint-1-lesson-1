@@ -1,5 +1,5 @@
 import { blogsRepository } from '../repository/blogs.repository'
-import { Blog } from '../domain'
+import { Blog, BlogUpdateInputDto } from '../domain'
 import { WithId } from 'mongodb'
 import { BlogQueryInput } from '../routes/input/blog-query.input'
 
@@ -19,5 +19,15 @@ export const blogsService = {
 
     async create(blog: Blog): Promise<{ id: string }> {
         return await blogsRepository.create(blog)
+    },
+    async update({
+        id,
+        blog,
+    }: {
+        id: string
+        blog: BlogUpdateInputDto
+    }): Promise<void> {
+        await blogsRepository.update({ id, blog })
+        return
     },
 }

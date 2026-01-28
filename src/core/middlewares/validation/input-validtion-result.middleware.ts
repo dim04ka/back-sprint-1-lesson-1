@@ -12,11 +12,13 @@ export const createErrorMessages = (
     errors: ValidationErrorType[]
 ): ValidationErrorListOutput => {
     return {
-        errors: errors.map((error) => ({
+        errorsMessages: errors.map((error) => ({
             status: error.status,
             detail: error.detail, //error message
             source: { pointer: error.source ?? '' }, //error field
             code: error.code ?? null, //domain error code
+            message: error.detail,
+            field: error.source ?? '',
         })),
     }
 }

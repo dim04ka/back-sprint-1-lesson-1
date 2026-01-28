@@ -22,7 +22,15 @@ export const getPostHandler = async (req: Request, res: Response) => {
                 .send({ message: 'Post not found' })
         }
 
-        res.status(HttpStatus.Ok).send(items[0])
+        res.status(HttpStatus.Ok).send({
+            id: items[0]._id.toString(),
+            title: items[0].title,
+            shortDescription: items[0].shortDescription,
+            content: items[0].content,
+            blogId: items[0].blogId,
+            blogName: items[0].blogName,
+            createdAt: items[0].createdAt,
+        })
     } catch (e: unknown) {
         errorsHandler(e, res)
     }

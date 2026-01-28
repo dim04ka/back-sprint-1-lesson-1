@@ -1,6 +1,6 @@
 import { ObjectId, WithId } from 'mongodb'
 import { blogsCollection } from '../../db/mongo.db'
-import { Blog } from '../domain'
+import { Blog, BlogUpdateInputDto } from '../domain'
 import { BlogQueryInput } from '../routes/input/blog-query.input'
 import { RepositoryNotFoundError } from '../../core/errors/repository-not-found.error'
 
@@ -55,7 +55,7 @@ export const blogsRepository = {
         blog,
     }: {
         id: string
-        blog: Blog
+        blog: BlogUpdateInputDto
     }): Promise<void> {
         const result = await blogsCollection.updateOne(
             { _id: new ObjectId(id) },
@@ -64,6 +64,7 @@ export const blogsRepository = {
         if (result.matchedCount === 0) {
             throw new Error('Blog not found')
         }
+        return
     },
     async delete(id: string): Promise<void> {
         const deletedResult = await blogsCollection.deleteOne({

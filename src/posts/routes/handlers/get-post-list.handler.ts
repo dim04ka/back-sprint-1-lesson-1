@@ -26,11 +26,24 @@ export const getPostListHandler = async (
         const { items, totalCount } =
             await postService.findManyWithBlogName(queryInput)
 
-        const postListOutput = mapToPostListPaginatedOutput(items, {
-            pageNumber: queryInput.pageNumber,
-            pageSize: queryInput.pageSize,
-            totalCount,
-        })
+        const responseItems = items.map((item) => ({
+            id: item._id.toString(),
+            title: item.title,
+            shortDescription: item.shortDescription,
+            content: item.content,
+            blogId: item.blogId,
+            blogName: item.blogName,
+            createdAt: item.createdAt,
+        }))
+
+        const postListOutput = mapToPostListPaginatedOutput(
+            responseItems,
+            {
+                pageNumber: queryInput.pageNumber,
+                pageSize: queryInput.pageSize,
+                totalCount,
+            }
+        )
 
         res.status(HttpStatus.Ok).send({
             items: postListOutput.items,

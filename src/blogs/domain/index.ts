@@ -14,3 +14,8 @@ export type BlogViewModel = {
     createdAt: string
     isMembership: boolean
 }
+
+export type BlogUpdateInputDto = Pick<
+    Blog,
+    'name' | 'description' | 'websiteUrl'
+>
