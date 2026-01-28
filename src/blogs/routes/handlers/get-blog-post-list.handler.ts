@@ -33,6 +33,8 @@ export const getBlogPostListHandler = async (
             sortDirection: req.query.sortDirection || 'desc',
         }
 
+        await blogsService.findById(blogId)
+
         const { items, totalCount } =
             await postService.findManyWithBlogName({
                 ...(queryInput as PostQueryInput),
