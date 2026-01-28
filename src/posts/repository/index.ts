@@ -17,7 +17,10 @@ export const postsRepository = {
         const { pageNumber, pageSize, sortBy, sortDirection } =
             queryDto
 
-        const skip = (pageNumber - 1) * pageSize
+        const normalizedPageNumber = Number(pageNumber) || 1
+        const normalizedPageSize = Number(pageSize) || 10
+
+        const skip = (normalizedPageNumber - 1) * normalizedPageSize
         const sortDirectionNumber = sortDirection === 'asc' ? 1 : -1
 
         const filter: any = {}
@@ -73,7 +76,7 @@ export const postsRepository = {
                     items: [
                         { $sort: { [sortBy]: sortDirectionNumber } },
                         { $skip: skip },
-                        { $limit: pageSize },
+                        { $limit: normalizedPageSize },
                     ],
                     totalCount: [{ $count: 'count' }],
                 },
