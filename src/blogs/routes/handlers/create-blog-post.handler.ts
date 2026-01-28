@@ -5,6 +5,7 @@ import { blogsService } from '../../application/blogs.service'
 import { WithId } from 'mongodb'
 import { Blog } from '../../domain'
 import { HttpStatus } from '../../../core/types/http-statuses'
+import { PostViewModel } from '../../../posts/dto'
 
 export const createBlogPostHandler = async (
     req: Request,
@@ -24,7 +25,8 @@ export const createBlogPostHandler = async (
             blogId,
             createdAt,
         })
-        res.status(HttpStatus.Created).send({
+
+        const responsePost: PostViewModel = {
             id,
             title,
             shortDescription,
@@ -32,7 +34,8 @@ export const createBlogPostHandler = async (
             blogId,
             createdAt,
             blogName: blog.name,
-        })
+        }
+        res.status(HttpStatus.Created).send(responsePost)
     } catch (e: unknown) {
         errorsHandler(e, res)
     }
