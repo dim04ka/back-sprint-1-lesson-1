@@ -12,13 +12,21 @@ export const getBlogListHandler = async (
     res: Response
 ) => {
     try {
-        const sanitizedQuery = matchedData<BlogQueryInput>(req, {
-            locations: ['query'],
-            includeOptionals: true,
-        })
+        // const sanitizedQuery = matchedData<BlogQueryInput>(req, {
+        //     locations: ['query'],
+        //     includeOptionals: true,
+        // })
 
-        const queryInput =
-            setDefaultSortAndPaginationIfNotExist(sanitizedQuery)
+        // const queryInput =
+        //     setDefaultSortAndPaginationIfNotExist(sanitizedQuery)
+
+        const queryInput = {
+            pageNumber: Number(req.query.pageNumber) || 1,
+            pageSize: Number(req.query.pageSize) || 10,
+            sortBy: req.query.sortBy || 'createdAt',
+            sortDirection: req.query.sortDirection || 'desc',
+            searchNameTerm: req.query.searchNameTerm || '',
+        }
 
         const { items, totalCount } =
             await blogsService.findMany(queryInput)

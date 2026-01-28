@@ -28,7 +28,7 @@ export const blogsRouter = Router()
 blogsRouter.get(
     '',
     // searchNameTermValidation,
-    paginationAndSortingValidation(BlogSortFields),
+    // paginationAndSortingValidation(BlogSortFields),
     inputValidationResultMiddleware,
     getBlogListHandler
 )
