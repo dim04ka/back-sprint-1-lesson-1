@@ -16,15 +16,22 @@ export const getBlogPostListHandler = async (
     try {
         const blogId = req.params.blogId
 
-        const sanitizedQuery = matchedData<BlogPostQueryInput>(req, {
-            locations: ['query'],
-            includeOptionals: true,
-        })
-        await blogsService.findById(blogId)
+        // const sanitizedQuery = matchedData<BlogPostQueryInput>(req, {
+        //     locations: ['query'],
+        //     includeOptionals: true,
+        // })
+        // await blogsService.findById(blogId)
 
-        const queryInput = setDefaultSortAndPaginationIfNotExist({
-            ...sanitizedQuery,
-        })
+        // const queryInput = setDefaultSortAndPaginationIfNotExist({
+        //     ...sanitizedQuery,
+        // })
+
+        const queryInput = {
+            pageNumber: req.query.pageNumber || 1,
+            pageSize: req.query.pageSize || 10,
+            sortBy: req.query.sortBy || 'createdAt',
+            sortDirection: req.query.sortDirection || 'desc',
+        }
 
         const { items, totalCount } =
             await postService.findManyWithBlogName({
