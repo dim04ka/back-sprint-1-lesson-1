@@ -15,13 +15,20 @@ export const getPostListHandler = async (
     res: Response
 ) => {
     try {
-        const sanitizedQuery = matchedData<PostQueryInput>(req, {
-            locations: ['query'],
-            includeOptionals: true,
-        })
+        // const sanitizedQuery = matchedData<PostQueryInput>(req, {
+        //     locations: ['query'],
+        //     includeOptionals: true,
+        // })
 
-        const queryInput =
-            setDefaultSortAndPaginationIfNotExist(sanitizedQuery)
+        // const queryInput =
+        //     setDefaultSortAndPaginationIfNotExist(sanitizedQuery)
+
+        const queryInput = {
+            pageNumber: Number(req.query.pageNumber) || 1,
+            pageSize: Number(req.query.pageSize) || 10,
+            sortBy: req.query.sortBy || 'createdAt',
+            sortDirection: req.query.sortDirection || 'desc',
+        }
 
         const { items, totalCount } =
             await postService.findManyWithBlogName(queryInput)
