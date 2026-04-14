@@ -15,6 +15,7 @@
     "license": "ISC",
     "packageManager": "pnpm@9.4.0+sha1.9217c800d4ab947a7aee520242a7b70d64fc7638",
     "dependencies": {
+        "bcrypt": "^6.0.0",
         "dotenv": "^17.2.3",
         "express": "^5.2.1",
         "express-validator": "^7.3.1",
@@ -23,6 +24,7 @@
         "swagger-ui-express": "^5.0.1"
     },
     "devDependencies": {
+        "@types/bcrypt": "^6.0.0",
         "@types/express": "^5.0.6",
         "@types/jest": "^30.0.0",
         "@types/node": "^25.0.3",
