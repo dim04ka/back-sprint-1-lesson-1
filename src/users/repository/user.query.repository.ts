@@ -21,16 +21,31 @@ export const usersQwRepository = {
             searchEmailTerm,
         } = sortQueryDto
 
-        const filter: any = {}
+        const filter: Record<string, unknown> = {}
+        const hasLoginTerm = Boolean(searchLoginTerm)
+        const hasEmailTerm = Boolean(searchEmailTerm)
 
-        if (searchLoginTerm) {
+        if (hasLoginTerm && hasEmailTerm) {
+            filter.$or = [
+                {
+                    login: {
+                        $regex: searchLoginTerm,
+                        $options: 'i',
+                    },
+                },
+                {
+                    email: {
+                        $regex: searchEmailTerm,
+                        $options: 'i',
+                    },
+                },
+            ]
+        } else if (hasLoginTerm) {
             filter.login = {
                 $regex: searchLoginTerm,
                 $options: 'i',
             }
-        }
-
-        if (searchEmailTerm) {
+        } else if (hasEmailTerm) {
             filter.email = {
                 $regex: searchEmailTerm,
                 $options: 'i',
