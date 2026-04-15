@@ -44,6 +44,8 @@ export const inputValidationResultMiddleware = (
         .formatWith(formaValidationError)
         .array({ onlyFirstError: true })
 
+    console.log('errors', errors)
+
     if (errors.length > 0) {
         res.status(HttpStatus.BadRequest).json(
             createErrorMessages(errors)

@@ -6,6 +6,7 @@ import { passwordValidation } from '../api/middleware/password.validation'
 import { loginValidation } from '../api/middleware/login.validation'
 import { emailValidation } from '../api/middleware/email.validation'
 import { inputValidationResultMiddleware } from '../../core/middlewares/validation/input-validtion-result.middleware'
+import { errorsHandler } from '../../core/errors/errors.handler'
 
 import { CreateUserDto } from '../types/create-user.dto'
 import { Request, Response } from 'express'
@@ -39,14 +40,18 @@ usersRouter.post(
     emailValidation,
     inputValidationResultMiddleware,
     async (req: Request<{}, {}, CreateUserDto>, res: Response) => {
-        const { email, login, password } = req.body
-        const user = await usersService.create({
-            email,
-            login,
-            password,
-        })
-        const newUser = await usersQwRepository.findById(user)
-        res.status(HttpStatus.Created).send(newUser)
+        try {
+            const { email, login, password } = req.body
+            const user = await usersService.create({
+                email,
+                login,
+                password,
+            })
+            const newUser = await usersQwRepository.findById(user)
+            res.status(HttpStatus.Created).send(newUser)
+        } catch (e: unknown) {
+            errorsHandler(e, res)
+        }
     }
 )
 
