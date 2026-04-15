@@ -17,14 +17,12 @@ authRouter.post(
     inputValidationResultMiddleware,
     async (req: Request<{}, {}, LoginDto>, res: Response) => {
         try {
-            console.log('login')
             const { loginOrEmail, password } = req.body
 
             const accessToken = await authService.login({
                 loginOrEmail,
                 password,
             })
-            console.log('accessToken', accessToken)
 
             if (!accessToken) {
                 return res.sendStatus(HttpStatus.Unauthorized)

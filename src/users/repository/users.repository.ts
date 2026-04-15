@@ -1,6 +1,5 @@
 import { IUserDB } from '../types/user.db.interface'
 import { usersCollection } from '../../db/mongo.db'
-import { RepositoryNotFoundError } from '../../core/errors/repository-not-found.error'
 import { ObjectId } from 'mongodb'
 
 export const usersRepository = {

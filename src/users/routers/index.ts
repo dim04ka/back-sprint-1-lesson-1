@@ -45,7 +45,8 @@ usersRouter.post(
             login,
             password,
         })
-        res.status(HttpStatus.Created).send({ id: user })
+        const newUser = await usersQwRepository.findById(user)
+        res.status(HttpStatus.Created).send(newUser)
     }
 )
 
