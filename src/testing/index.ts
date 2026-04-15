@@ -1,7 +1,7 @@
 import { Router } from 'express'
 
 import { Request, Response } from 'express'
-import { blogsCollection } from '../db/mongo.db'
+import { blogsCollection, usersCollection } from '../db/mongo.db'
 import { postsCollection } from '../db/mongo.db'
 import { HttpStatus } from '../core/types/http-statuses'
 
@@ -13,6 +13,7 @@ testingRouter.delete(
         await Promise.all([
             blogsCollection.deleteMany(),
             postsCollection.deleteMany(),
+            usersCollection.deleteMany(),
         ])
         res.sendStatus(HttpStatus.NoContent)
     }
