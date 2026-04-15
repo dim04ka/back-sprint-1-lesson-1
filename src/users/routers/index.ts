@@ -20,12 +20,15 @@ usersRouter.get(
     async (req: Request, res: Response) => {
         const { pageNumber, pageSize, sortBy, sortDirection } =
             sortQueryFieldsUtil(req.query)
+        const { searchLoginTerm, searchEmailTerm } = req.query
 
         const allUsers = await usersQwRepository.findAllUsers({
             pageNumber,
             pageSize,
             sortBy,
             sortDirection,
+            searchLoginTerm: searchLoginTerm as string,
+            searchEmailTerm: searchEmailTerm as string,
         })
 
         return res.status(200).send(allUsers)

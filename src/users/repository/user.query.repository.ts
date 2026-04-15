@@ -7,19 +7,41 @@ import { IPagination } from '../../core/types/pagination'
 
 export const usersQwRepository = {
     async findAllUsers(
-        sortQueryDto: SortQueryFilterType
+        sortQueryDto: SortQueryFilterType & {
+            searchLoginTerm?: string
+            searchEmailTerm?: string
+        }
     ): Promise<IPagination<IUserView[]>> {
-        const { sortBy, sortDirection, pageSize, pageNumber } =
-            sortQueryDto
+        const {
+            sortBy,
+            sortDirection,
+            pageSize,
+            pageNumber,
+            searchLoginTerm,
+            searchEmailTerm,
+        } = sortQueryDto
 
-        const loginAndEmailFilter = {}
+        const filter: any = {}
 
-        const totalCount = await usersCollection.countDocuments(
-            loginAndEmailFilter
-        )
+        if (searchLoginTerm) {
+            filter.login = {
+                $regex: searchLoginTerm,
+                $options: 'i',
+            }
+        }
+
+        if (searchEmailTerm) {
+            filter.email = {
+                $regex: searchEmailTerm,
+                $options: 'i',
+            }
+        }
+
+        const totalCount =
+            await usersCollection.countDocuments(filter)
 
         const users = await usersCollection
-            .find(loginAndEmailFilter)
+            .find(filter)
             .sort({ [sortBy]: sortDirection })
             .skip((pageNumber - 1) * pageSize)
             .limit(pageSize)
