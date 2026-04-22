@@ -25,8 +25,9 @@ export const getCommentsByPostIdHandler = async (
 
         const result = {
             items,
-            pageNumber: queryInput.pageNumber,
+            page: queryInput.pageNumber,
             pageSize: queryInput.pageSize,
+            pagesCount: Math.ceil(totalCount / queryInput.pageSize),
             totalCount,
         }
 

@@ -59,8 +59,8 @@ commentsRouter.put(
     '/:id',
     accessTokenGuard,
     commentIdValidation,
-    inputValidationResultMiddleware,
     commentContentValidation,
+    inputValidationResultMiddleware,
     async (req: Request, res: Response) => {
         try {
             const { id } = req.params

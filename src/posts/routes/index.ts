@@ -62,6 +62,7 @@ postsRouter.post(
     accessTokenGuard,
     idValidation,
     commentContentValidation,
+    inputValidationResultMiddleware,
     createCommentHandler
 )
 
