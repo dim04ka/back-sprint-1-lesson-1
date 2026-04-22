@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import {
     idValidation,
     inputValidationResultMiddleware,
@@ -20,7 +21,34 @@ import { paginationAndSortingValidation } from '../../core/middlewares/validatio
 import { PostSortFields } from './input/post-sort.input'
 import { accessTokenGuard } from '../../auth/routes/guard/access.token.guard'
 import { commentContentValidation } from '../../comments/validation/comment.validation'
+import { postsRepository } from '../repository'
 export const postsRouter = Router()
+
+const postByIdExistenceGuard = async (
+    req: Request<{ id: string }>,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        await postsRepository.findById(req.params.id)
+        next()
+    } catch (error) {
+        res.status(404).send({ message: 'Post not found' })
+    }
+}
+
+const postByPostIdExistenceGuard = async (
+    req: Request<{ postId: string }>,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        await postsRepository.findById(req.params.postId)
+        next()
+    } catch (error) {
+        res.status(404).send({ message: 'Post not found' })
+    }
+}
 
 postsRouter.get(
     '',
@@ -61,9 +89,15 @@ postsRouter.post(
     '/:id/comments',
     accessTokenGuard,
     idValidation,
+    inputValidationResultMiddleware,
+    postByIdExistenceGuard,
     commentContentValidation,
     inputValidationResultMiddleware,
     createCommentHandler
 )
 
-postsRouter.get('/:postId/comments', getCommentsByPostIdHandler)
+postsRouter.get(
+    '/:postId/comments',
+    postByPostIdExistenceGuard,
+    getCommentsByPostIdHandler
+)
