@@ -14,19 +14,19 @@ export const createCommentHandler = async (
     res: Response
 ) => {
     try {
-        const { postId } = req.params
+        const { id } = req.params
         const { content } = req.body
 
         const userId = req.user!.id
 
         const comment: Comment = {
-            postId: postId as string,
+            postId: id as string,
             content,
             userId,
             createdAt: new Date().toISOString(),
         }
 
-        const hasPost = await postsRepository.findById(postId)
+        const hasPost = await postsRepository.findById(id)
 
         if (!hasPost) {
             return res.status(404).send({ message: 'Post not found' })

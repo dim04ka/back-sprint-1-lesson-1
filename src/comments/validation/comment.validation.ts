@@ -1,0 +1,20 @@
+import { body, param } from 'express-validator'
+
+export const commentIdValidation = param('id')
+    .exists()
+    .withMessage('Comment ID is required')
+    .isString()
+    .withMessage('Comment ID must be a string')
+    .isLength({ min: 1 })
+    .withMessage('Comment ID must not be empty')
+    .isMongoId()
+    .withMessage('Incorrect format of ObjectId')
+
+export const commentContentValidation = body('content')
+    .exists()
+    .withMessage('Content is required')
+    .isString()
+    .withMessage('Content must be a string')
+    .trim()
+    .isLength({ min: 20, max: 3000 })
+    .withMessage('Content must be between 20 and 3000 characters')

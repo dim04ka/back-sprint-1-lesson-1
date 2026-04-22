@@ -19,6 +19,7 @@ import {
 import { paginationAndSortingValidation } from '../../core/middlewares/validation'
 import { PostSortFields } from './input/post-sort.input'
 import { accessTokenGuard } from '../../auth/routes/guard/access.token.guard'
+import { commentContentValidation } from '../../comments/validation/comment.validation'
 export const postsRouter = Router()
 
 postsRouter.get(
@@ -57,8 +58,10 @@ postsRouter.delete(
 )
 
 postsRouter.post(
-    '/:postId/comments',
+    '/:id/comments',
     accessTokenGuard,
+    idValidation,
+    commentContentValidation,
     createCommentHandler
 )
 

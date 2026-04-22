@@ -2,8 +2,6 @@ import { commentsService } from '../../../comments/service/comment.service'
 import { HttpStatus } from '../../../core/types/http-statuses'
 import { Request, Response } from 'express'
 import { PostQueryInput } from '../input/post-query.input'
-import { CommentViewModel } from '../../../comments/types/comment'
-import { mapToPaginatedOutput } from '../../../core/utils/mappers'
 
 export const getCommentsByPostIdHandler = async (
     req: Request<{ postId: string }, {}, {}, PostQueryInput>,
@@ -25,16 +23,14 @@ export const getCommentsByPostIdHandler = async (
                 queryDto: queryInput,
             })
 
-        const commentsOutput = mapToPaginatedOutput<CommentViewModel>(
+        const result = {
             items,
-            {
-                pageNumber: queryInput.pageNumber,
-                pageSize: queryInput.pageSize,
-                totalCount,
-            }
-        )
+            pageNumber: queryInput.pageNumber,
+            pageSize: queryInput.pageSize,
+            totalCount,
+        }
 
-        res.status(HttpStatus.Ok).send(commentsOutput)
+        res.status(HttpStatus.Ok).send(result)
     } catch (error) {
         res.status(HttpStatus.NotFound).send({
             message: 'Comments not found',
