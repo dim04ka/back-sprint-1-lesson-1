@@ -1,11 +1,10 @@
 import { Collection, Db, MongoClient } from 'mongodb'
 
-import dotenv from 'dotenv'
 import { Post } from '../../posts/dto'
 import { Blog } from '../../blogs/domain'
 import { IUserDB } from '../../users/types/user.db.interface'
 import type { Comment } from '../../comments/types/comment'
-dotenv.config()
+import { appConfig } from '../../common/config/config'
 
 const POSTS_COLLECTION_NAME = 'posts'
 const BLOGS_COLLECTION_NAME = 'blogs'
@@ -21,7 +20,7 @@ export let commentsCollection: Collection<Comment>
 // Подключения к бд
 export async function runDB(url: string): Promise<void> {
     client = new MongoClient(url)
-    const db: Db = client.db(process.env.MONGO_DB_NAME || '')
+    const db: Db = client.db(appConfig.MONGO_DB_NAME)
 
     // Инициализация коллекций
     blogsCollection = db.collection<Blog>(BLOGS_COLLECTION_NAME)

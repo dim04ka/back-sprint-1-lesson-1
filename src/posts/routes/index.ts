@@ -4,7 +4,10 @@ import {
     inputValidationResultMiddleware,
 } from '../../core/middlewares/validation'
 
-import { createPostValidationMiddleware } from './validate'
+import {
+    contentCommentValidation,
+    createPostValidationMiddleware,
+} from './validate'
 import { superAdminGuardMiddleware } from '../../core/middlewares/super-admin.guard-middleware'
 import {
     getPostHandler,
@@ -16,14 +19,11 @@ import {
     getCommentsByPostIdHandler,
 } from './handlers'
 
-import { paginationAndSortingValidation } from '../../core/middlewares/validation'
-import { PostSortFields } from './input/post-sort.input'
 import { accessTokenGuard } from '../../auth/routes/guard/access.token.guard'
 export const postsRouter = Router()
 
 postsRouter.get(
     '',
-    // paginationAndSortingValidation(PostSortFields),
     inputValidationResultMiddleware,
     getPostListHandler
 )
@@ -59,6 +59,7 @@ postsRouter.delete(
 postsRouter.post(
     '/:postId/comments',
     accessTokenGuard,
+    contentCommentValidation,
     createCommentHandler
 )
 

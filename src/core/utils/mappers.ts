@@ -8,11 +8,9 @@ export const mapToPaginatedOutput = <T>(
 ) => {
     return {
         items,
-        meta: {
-            page: meta.pageNumber,
-            pageSize: meta.pageSize,
-            totalCount: meta.totalCount,
-            pagesCount: Math.ceil(meta.totalCount / meta.pageSize),
-        },
+        page: meta.pageNumber,
+        pageSize: meta.pageSize,
+        totalCount: meta.totalCount,
+        pagesCount: Math.ceil(meta.totalCount / meta.pageSize),
     }
 }
