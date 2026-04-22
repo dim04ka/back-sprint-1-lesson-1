@@ -1,5 +1,6 @@
 import { usersRepository } from '../../users/repository/users.repository'
 import { bcryptService } from '../adapters/bcrypt.service'
+import { jwtService } from '../adapters/jwt.service'
 
 export const authService = {
     async login({
@@ -11,6 +12,7 @@ export const authService = {
     }) {
         const user =
             await usersRepository.findByLoginOrEmail(loginOrEmail)
+
         if (!user) return false
         const isPasswordCorrect = await bcryptService.checkPassword(
             password,
@@ -19,6 +21,10 @@ export const authService = {
         if (!isPasswordCorrect) {
             return null
         }
-        return { accessToken: 'token' }
+        const accessToken = await jwtService.createToken(
+            user._id.toString()
+        )
+
+        return { accessToken: accessToken }
     },
 }

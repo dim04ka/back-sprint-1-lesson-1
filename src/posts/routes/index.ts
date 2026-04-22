@@ -12,10 +12,13 @@ import {
     createPostHandler,
     updatePostHandler,
     deletePostHandler,
+    createCommentHandler,
+    getCommentsByPostIdHandler,
 } from './handlers'
 
 import { paginationAndSortingValidation } from '../../core/middlewares/validation'
 import { PostSortFields } from './input/post-sort.input'
+import { accessTokenGuard } from '../../auth/routes/guard/access.token.guard'
 export const postsRouter = Router()
 
 postsRouter.get(
@@ -52,3 +55,11 @@ postsRouter.delete(
     inputValidationResultMiddleware,
     deletePostHandler
 )
+
+postsRouter.post(
+    '/:postId/comments',
+    accessTokenGuard,
+    createCommentHandler
+)
+
+postsRouter.get('/:postId/comments', getCommentsByPostIdHandler)

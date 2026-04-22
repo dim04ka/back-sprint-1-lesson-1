@@ -4,17 +4,20 @@ import dotenv from 'dotenv'
 import { Post } from '../../posts/dto'
 import { Blog } from '../../blogs/domain'
 import { IUserDB } from '../../users/types/user.db.interface'
+import type { Comment } from '../../comments/types/comment'
 dotenv.config()
 
 const POSTS_COLLECTION_NAME = 'posts'
 const BLOGS_COLLECTION_NAME = 'blogs'
 const USERS_COLLECTION_NAME = 'users'
+const COMMENTS_COLLECTION_NAME = 'comments'
 
 export let client: MongoClient
 
 export let blogsCollection: Collection<Blog>
 export let postsCollection: Collection<Post>
 export let usersCollection: Collection<IUserDB>
+export let commentsCollection: Collection<Comment>
 // Подключения к бд
 export async function runDB(url: string): Promise<void> {
     client = new MongoClient(url)
@@ -24,6 +27,9 @@ export async function runDB(url: string): Promise<void> {
     blogsCollection = db.collection<Blog>(BLOGS_COLLECTION_NAME)
     postsCollection = db.collection<Post>(POSTS_COLLECTION_NAME)
     usersCollection = db.collection<IUserDB>(USERS_COLLECTION_NAME)
+    commentsCollection = db.collection<Comment>(
+        COMMENTS_COLLECTION_NAME
+    )
 
     try {
         console.log('Connecting to the database...')
