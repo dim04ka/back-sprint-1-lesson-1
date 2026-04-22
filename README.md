@@ -152,8 +152,6 @@ pnpm format
 ```env
 MONGO_CONNECT_URL=mongodb://localhost:27017
 MONGO_DB_NAME=blogger
-AC_SECRET=your-super-secret
-AC_TIME=15m
 PORT=5001
 NODE_ENV=development
 ```

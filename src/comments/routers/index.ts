@@ -3,10 +3,6 @@ import { Request, Response } from 'express'
 import { commentsService } from '../service/comment.service'
 import { usersRepository } from '../../users/repository/users.repository'
 import { accessTokenGuard } from '../../auth/routes/guard/access.token.guard'
-import {
-    contentValidation,
-    idValidation,
-} from '../validate/update-comment.validate'
 
 export const commentsRouter = Router()
 
@@ -36,7 +32,6 @@ commentsRouter.get('/:id', async (req: Request, res: Response) => {
 commentsRouter.delete(
     '/:id',
     accessTokenGuard,
-    idValidation,
     async (req: Request, res: Response) => {
         try {
             const { id } = req.params
@@ -54,17 +49,16 @@ commentsRouter.delete(
 )
 
 commentsRouter.put(
-    '/:id',
+    '/:commentId',
     accessTokenGuard,
-    contentValidation,
-    idValidation,
+
     async (req: Request, res: Response) => {
         try {
-            const { id } = req.params
+            const { commentId } = req.params
             const { content } = req.body
             const userId = req.user!.id
 
-            const comment = await commentsService.findById(id)
+            const comment = await commentsService.findById(commentId)
             if (!comment) {
                 return res
                     .status(404)
@@ -73,7 +67,7 @@ commentsRouter.put(
             if (comment!.userId !== userId) {
                 return res.status(403).send({ message: 'Forbidden' })
             }
-            await commentsService.updateComment(id, content)
+            await commentsService.updateComment(commentId, content)
             res.sendStatus(204)
         } catch (error) {
             res.status(400).send({ message: 'Invalid comment' })

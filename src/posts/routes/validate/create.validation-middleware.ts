@@ -38,19 +38,9 @@ export const blogIdValidation = body('blogId')
     .isLength({ min: 1 })
     .withMessage('Blog ID must not be empty')
 
-export const contentCommentValidation = body('content')
-    .exists()
-    .withMessage('Content is required')
-    .isString()
-    .withMessage('Content must be a string')
-    .trim()
-    .isLength({ min: 20, max: 3000 })
-    .withMessage('Content must be between 20 and 3000 characters')
-
 export const createPostValidationMiddleware = [
     titleValidation,
     shortDescriptionValidation,
     contentValidation,
     blogIdValidation,
-    contentCommentValidation,
 ]

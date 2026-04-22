@@ -1,7 +1,6 @@
 import express, { Express } from 'express'
 import { setupApp } from './setup-app'
 import { runDB } from './db/mongo.db'
-import { appConfig } from './common/config/config'
 
 import dotenv from 'dotenv'
 dotenv.config()
@@ -18,7 +17,7 @@ const bootstrap = async (): Promise<Express> => {
 
     setupApp(app)
 
-    await runDB(appConfig.MONGO_CONNECT_URL)
+    await runDB(process.env.MONGO_CONNECT_URL || '')
 
     isInitialized = true
 
@@ -27,7 +26,7 @@ const bootstrap = async (): Promise<Express> => {
         process.env.NODE_ENV !== 'production' ||
         !process.env.VERCEL
     ) {
-        const PORT = appConfig.PORT
+        const PORT = process.env.PORT || 5001
         app.listen(PORT, () => {
             console.log(`Example app listening on port ${PORT}`)
         })
