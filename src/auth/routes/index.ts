@@ -7,10 +7,30 @@ import {
     loginHandler,
     meHandler,
     registrationHandler,
+    registrationEmailResendingHandler,
+    registrationConfirmationHandler,
 } from './handlers'
-import { registrationValidationMiddleware } from './validate/registration.validate'
+import {
+    registrationValidationMiddleware,
+    emailValidation,
+    codeValidation,
+} from './validate/registration.validate'
 
 export const authRouter = Router()
+
+authRouter.post(
+    '/registration-confirmation',
+    codeValidation,
+    inputValidationResultMiddleware,
+    registrationConfirmationHandler
+)
+
+authRouter.post(
+    '/registration-email-resending',
+    emailValidation,
+    inputValidationResultMiddleware,
+    registrationEmailResendingHandler
+)
 
 authRouter.post(
     '/registration',

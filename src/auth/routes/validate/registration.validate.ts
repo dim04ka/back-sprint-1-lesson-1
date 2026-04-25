@@ -1,5 +1,11 @@
 import { body } from 'express-validator'
 
+export const codeValidation = body('code')
+    .isString()
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage('confirmation code is not correct')
+
 export const loginValidation = body('login')
     .isString()
     .trim()

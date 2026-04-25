@@ -17,7 +17,6 @@ export const nodemailerService = {
         let info: any = null
 
         try {
-            console.log('==start==')
             info = await transporter.sendMail({
                 from: 'from-mail@gmail.com',
                 to: email,
@@ -27,8 +26,6 @@ export const nodemailerService = {
         } catch (e: unknown) {
             console.error('Send email error', e)
         }
-
-        console.log('==final result==', info)
 
         return !!info
     },

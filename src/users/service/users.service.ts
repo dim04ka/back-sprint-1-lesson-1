@@ -14,29 +14,40 @@ export const usersService = {
         password: string
     }) {
         const { email, login, password } = dto
-        try {
-            const passwordHash =
-                await bcryptService.generateHash(password)
 
-            const newUser = new User(login, email, passwordHash)
+        const user = await usersRepository.doesExistByLoginOrEmail(
+            login,
+            email
+        )
 
-            await usersRepository.create(newUser)
-
-            try {
-                await nodemailerService.sendEmail(
-                    email,
-                    newUser.emailConfirmation.confirmationCode,
-                    emailExamples.registrationEmail
-                )
-            } catch (e: unknown) {
-                console.error('Send email error', e)
-            }
-
+        if (user) {
             return {
-                status: 'success',
+                status: 'error',
+                data: null,
+                error: 'login or email already exists',
             }
+        }
+
+        const passwordHash =
+            await bcryptService.generateHash(password)
+
+        const newUser = new User(login, email, passwordHash)
+
+        await usersRepository.create(newUser)
+
+        try {
+            await nodemailerService.sendEmail(
+                email,
+                newUser.emailConfirmation.confirmationCode,
+                emailExamples.registrationEmail
+            )
         } catch (e: unknown) {
-            // errorsHandler(e, res)
+            console.error('Send email error', e)
+        }
+
+        return {
+            status: 'success',
+            data: newUser,
         }
     },
     async create(dto: CreateUserDto) {

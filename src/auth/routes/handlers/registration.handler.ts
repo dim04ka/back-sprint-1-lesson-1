@@ -21,9 +21,11 @@ export const registrationHandler = async (
             password,
         })
 
+        console.log('result==', result)
+
         if (result?.status === 'success')
-            return res.sendStatus(HttpStatus.Created)
-        return res.sendStatus(HttpStatus.Created)
+            return res.status(HttpStatus.Created).send(result.data)
+        return res.status(HttpStatus.BadRequest).send(result.error)
     } catch (e: unknown) {
         // errorsHandler(e, res)
     }
