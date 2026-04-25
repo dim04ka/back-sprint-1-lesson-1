@@ -1,9 +1,9 @@
-import { IUserDB } from '../types/user.db.interface'
 import { usersCollection } from '../../db/mongo.db'
 import { ObjectId } from 'mongodb'
+import { User } from '../domain/user.entity'
 
 export const usersRepository = {
-    async create(user: IUserDB): Promise<string> {
+    async create(user: User): Promise<string> {
         const newUser = await usersCollection.insertOne({ ...user })
 
         return newUser.insertedId.toString()
