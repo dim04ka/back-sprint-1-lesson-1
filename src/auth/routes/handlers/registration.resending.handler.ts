@@ -38,6 +38,10 @@ export const registrationEmailResendingHandler = async (
         } catch (e: unknown) {
             console.error('Send email error', e)
         }
+
+        return res.status(HttpStatus.NoContent).send({
+            message: 'email resending',
+        })
     } catch (e: unknown) {
         errorsHandler(e, res)
     }
