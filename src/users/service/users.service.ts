@@ -6,25 +6,48 @@ import { IUserDB } from '../types/user.db.interface'
 import { User } from '../domain/user.entity'
 import { nodemailerService } from '../../auth/adapters/nodemailer.service'
 import { emailExamples } from '../../auth/adapters/emailExamples'
+import { Result } from '../../common/result/result.type'
+import { ResultStatus } from '../../common/result/resultCode'
 
 export const usersService = {
     async registerUser(dto: {
         email: string
         login: string
         password: string
-    }) {
+    }): Promise<Result<User | null>> {
         const { email, login, password } = dto
 
-        const user = await usersRepository.doesExistByLoginOrEmail(
+        const isExistByLoginOrEmail = await usersRepository.doesExistByLoginOrEmail(
             login,
             email
         )
+        if (isExistByLoginOrEmail) {
+            const isExistByEmail = await usersRepository.doesExistByEmail(
+           
+                email
+            )
+            if (isExistByEmail) {
+                return {
+                    status: ResultStatus.BadRequest,
+                    data: null,
+                    extensions: [
+                        {
+                            field: 'email',
+                            message: 'email already exists',
+                        },
+                    ],
+                }
 
-        if (user) {
+            }
             return {
-                status: 'error',
+                status: ResultStatus.BadRequest,
                 data: null,
-                error: 'login or email already exists',
+                extensions: [
+                    {
+                        field: 'login',
+                        message: 'login already exists',
+                    },
+                ],
             }
         }
 
@@ -46,8 +69,9 @@ export const usersService = {
         }
 
         return {
-            status: 'success',
+            status: ResultStatus.Success,
             data: newUser,
+            extensions: [],
         }
     },
     async create(dto: CreateUserDto) {
