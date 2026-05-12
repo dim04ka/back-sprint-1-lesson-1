@@ -4,7 +4,7 @@ import { blogsService } from '../../application/blogs.service'
 import { mapToBlogOutput } from '../mapper/map-to-blog-output.util'
 import { errorsHandler } from '../../../core/errors/errors.handler'
 
-export const getBlogHandler = async (req: Request, res: Response) => {
+export const getBlogHandler = async (req: Request<{ id: string }>, res: Response) => {
     try {
         const id = req.params.id
         const blog = await blogsService.findById(id)

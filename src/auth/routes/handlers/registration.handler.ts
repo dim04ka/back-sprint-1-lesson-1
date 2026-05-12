@@ -28,7 +28,7 @@ export const registrationHandler = async (
         })
 
         if (result?.status === ResultStatus.Success)
-            return res.status(HttpStatus.Created).send(result.data)
+            return res.status(HttpStatus.NoContent).send()
         return res.status(HttpStatus.BadRequest).send({errorsMessages: result.extensions})
     } catch (e: unknown) {
         errorsHandler(e, res)

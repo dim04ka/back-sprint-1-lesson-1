@@ -8,7 +8,7 @@ import { HttpStatus } from '../../../core/types/http-statuses'
 import { PostViewModel } from '../../../posts/dto'
 
 export const createBlogPostHandler = async (
-    req: Request,
+    req: Request<{ blogId: string }, {}, { title: string, shortDescription: string, content: string }>,
     res: Response
 ) => {
     try {

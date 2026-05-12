@@ -25,9 +25,9 @@ const commentExistenceGuard = async (
     }
 }
 
-commentsRouter.get('/:id', async (req: Request, res: Response) => {
+commentsRouter.get('/:id', async (req: Request<{ id: string }>, res: Response) => {
     try {
-        const { id } = req.params
+        const id = req.params.id
 
         const comment = await commentsService.findById(id)
         const user = await usersRepository.findById(comment!.userId)

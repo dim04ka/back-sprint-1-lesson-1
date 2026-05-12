@@ -4,7 +4,7 @@ import { errorsHandler } from '../../../core/errors/errors.handler'
 import { blogsService } from '../../application/blogs.service'
 
 export const deleteBlogHandler = async (
-    req: Request,
+    req: Request<{ id: string }>,
     res: Response
 ) => {
     try{

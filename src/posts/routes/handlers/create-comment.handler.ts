@@ -10,11 +10,11 @@ import { postsRepository } from '../../repository'
 import { HttpStatus } from '../../../core/types/http-statuses'
 
 export const createCommentHandler = async (
-    req: Request,
+    req: Request<{ id: string }>,
     res: Response
 ) => {
     try {
-        const { id } = req.params
+        const id = req.params.id
         const { content } = req.body
 
         const userId = req.user!.id

@@ -5,7 +5,7 @@ import { postService } from '../../application/post.service'
 import { errorsHandler } from '../../../core/errors/errors.handler'
 
 export const updatePostHandler = async (
-    req: Request,
+    req: Request<{ id: string }, {}, CreatePost>,
     res: Response
 ) => {
     try {

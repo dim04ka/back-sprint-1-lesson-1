@@ -5,7 +5,7 @@ import { errorsHandler } from '../../../core/errors/errors.handler'
 import { blogsService } from '../../application/blogs.service'
 
 export const updateBlogHandler = async (
-    req: Request,
+    req: Request<{ id: string }, {}, BlogUpdateInputDto>,
     res: Response
 ) => {
     try {

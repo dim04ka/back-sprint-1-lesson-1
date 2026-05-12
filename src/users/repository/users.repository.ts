@@ -4,7 +4,7 @@ import { User } from '../domain/user.entity'
 
 export const usersRepository = {
     async create(user: User): Promise<string> {
-        const newUser = await usersCollection.insertOne({ ...user })
+        const newUser = await usersCollection.insertOne(user)
 
         return newUser.insertedId.toString()
     },
