@@ -3,6 +3,7 @@ import { LoginDto } from '../../types/login.dto'
 import { authService } from '../../service/auth.service'
 import { HttpStatus } from '../../../core/types/http-statuses'
 import { errorsHandler } from '../../../core/errors/errors.handler'
+// import { appConfig } from '../../../common/config/config'
 
 export const loginHandler = async (
     req: Request<{}, {}, LoginDto>,
@@ -11,16 +12,23 @@ export const loginHandler = async (
     try {
         const { loginOrEmail, password } = req.body
 
-        const accessToken = await authService.login({
+        const result = await authService.login({
             loginOrEmail,
             password,
         })
 
-        if (!accessToken) {
+        if (!result) {
             return res.sendStatus(HttpStatus.Unauthorized)
         }
 
-        return res.send(accessToken)
+        const { accessToken, refreshToken } = result
+
+        if (!result?.accessToken) {
+            return res.sendStatus(HttpStatus.BadRequest)
+        }
+
+        res.cookie('refreshToken', refreshToken, {httpOnly: true,secure: true})
+        return res.send({accessToken})
     } catch (e: unknown) {
         errorsHandler(e, res)
     }

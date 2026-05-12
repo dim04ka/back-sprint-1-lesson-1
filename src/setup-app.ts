@@ -8,9 +8,11 @@ import { usersRouter } from './users/routers'
 import { testingRouter } from './testing'
 import { authRouter } from './auth/routes'
 import { commentsRouter } from './comments/routers'
+import cookieParser from 'cookie-parser'
 
 export const setupApp = (app: Express) => {
     app.use(express.json())
+    app.use(cookieParser())
 
     app.get('/', (_: Request, res: Response) => {
         res.status(200).send('Hello world!')

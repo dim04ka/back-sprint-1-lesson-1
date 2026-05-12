@@ -14,7 +14,9 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "@types/cookie-parser": "^1.4.10",
         "bcrypt": "^6.0.0",
+        "cookie-parser": "^1.4.7",
         "date-fns": "^4.1.0",
         "dotenv": "^17.2.3",
         "express": "^5.2.1",
