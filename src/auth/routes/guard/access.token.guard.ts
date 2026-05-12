@@ -12,6 +12,7 @@ export const accessTokenGuard = async (
     if (authType !== 'Bearer' || !token) return res.sendStatus(401)
 
     const payload = await jwtService.verifyToken(token)
+
     if (payload) {
         const { userId } = payload
 

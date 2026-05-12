@@ -9,6 +9,7 @@ import {
     registrationHandler,
     registrationEmailResendingHandler,
     registrationConfirmationHandler,
+    refreshTokenHandler,
 } from './handlers'
 import {
     registrationValidationMiddleware,
@@ -48,3 +49,5 @@ authRouter.post(
 )
 
 authRouter.get('/me', accessTokenGuard, meHandler)
+
+authRouter.post('/refresh-token', refreshTokenHandler)
