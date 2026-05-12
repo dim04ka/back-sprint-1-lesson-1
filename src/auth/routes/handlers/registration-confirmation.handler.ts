@@ -1,7 +1,9 @@
 import { errorsHandler } from '../../../core/errors/errors.handler'
 import { Request, Response } from 'express'
-import { usersRepository } from '../../../users/repository/users.repository'
+// import { usersRepository } from '../../../users/repository/users.repository'
 import { HttpStatus } from '../../../core/types/http-statuses'
+import { authService } from '../../../composition-root'
+import { ResultStatus } from '../../../common/result/resultCode'
 
 export const registrationConfirmationHandler = async (
     req: Request,
@@ -10,24 +12,12 @@ export const registrationConfirmationHandler = async (
     try {
         const { code } = req.body
 
-        const user =
-            await usersRepository.findByConfirmationCode(code)
-        if (
-            !user ||
-            user.emailConfirmation.isConfirmed ||
-            user.emailConfirmation.expirationDate < new Date()
-        ) {
-            return res.status(HttpStatus.BadRequest).send({
-                message: 'code not found or expired',
-            })
-        }
+        const result = await authService.confirmEmail(code)
 
-        user.emailConfirmation.isConfirmed = true
-        await usersRepository.update(user)
+        if (result?.status === ResultStatus.Success)    
+            return res.status(HttpStatus.NoContent)
+        return res.status(HttpStatus.BadRequest).send(result.errorMessage)
 
-        return res.status(HttpStatus.NoContent).send({
-            message: 'email confirmed',
-        })
     } catch (e: unknown) {
         errorsHandler(e, res)
     }

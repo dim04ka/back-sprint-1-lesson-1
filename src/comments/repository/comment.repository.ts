@@ -1,9 +1,10 @@
 import { commentsCollection } from '../../db/mongo.db'
 import { Comment } from '../types/comment'
-import { usersRepository } from '../../users/repository/users.repository'
+// import { usersRepository } from '../../users/repository/users.repository'
 import { PostQueryInput } from '../../posts/routes/input/post-query.input'
 import { ObjectId } from 'mongodb'
 import { RepositoryNotFoundError } from '../../core/errors/repository-not-found.error'
+import { usersRepository } from '../../composition-root'
 
 export const commentsRepository = {
     async update(id: string, content: string): Promise<void> {

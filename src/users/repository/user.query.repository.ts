@@ -55,19 +55,24 @@ export const usersQwRepository = {
         const totalCount =
             await usersCollection.countDocuments(filter)
 
+            
+
         const users = await usersCollection
             .find(filter)
             .sort({ [sortBy]: sortDirection })
             .skip((pageNumber - 1) * pageSize)
             .limit(pageSize)
-            .toArray()
+            .lean()
+            .exec()
+
+            console.log('users=>', users)
 
         return {
             pagesCount: Math.ceil(totalCount / pageSize),
             page: pageNumber,
             pageSize: pageSize,
             totalCount,
-            items: users.map((u) => this._getInView(u)),
+            items: users.map((u: WithId<IUserDB>) => this._getInView(u)),
         }
     },
     async findById(id: string): Promise<IUserView | null> {

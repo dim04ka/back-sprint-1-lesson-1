@@ -12,7 +12,7 @@ export const createBlogPostHandler = async (
     res: Response
 ) => {
     try {
-        const blogId = req.params.blogId
+        const blogId: string = req.params.blogId as string
         const { title, shortDescription, content } = req.body
 
         const blog: WithId<Blog> = await blogsService.findById(blogId)

@@ -1,12 +1,12 @@
 import jwt, { type SignOptions } from 'jsonwebtoken'
 import { appConfig } from '../../common/config/config'
 
-export const jwtService = {
+export class JwtService {
     async createToken(userId: string): Promise<string> {
         return jwt.sign({ userId }, appConfig.AC_SECRET, {
             expiresIn: appConfig.AC_TIME as SignOptions['expiresIn'],
         })
-    },
+    }
     async decodeToken(token: string): Promise<any> {
         try {
             return jwt.decode(token)
@@ -14,7 +14,7 @@ export const jwtService = {
             console.error("Can't decode token", e)
             return null
         }
-    },
+    }
     async verifyToken(
         token: string
     ): Promise<{ userId: string } | null> {
@@ -26,5 +26,5 @@ export const jwtService = {
             console.error('Token verify some error')
             return null
         }
-    },
+    }
 }

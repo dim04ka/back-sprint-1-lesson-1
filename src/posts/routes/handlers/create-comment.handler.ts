@@ -4,7 +4,8 @@ import {
     Comment,
     CommentViewModel,
 } from '../../../comments/types/comment'
-import { usersRepository } from '../../../users/repository/users.repository'
+// import { usersRepository } from '../../../users/repository/users.repository'
+import { usersRepository } from '../../../composition-root'
 import { DomainError } from '../../../core/errors/domain.error'
 import { postsRepository } from '../../repository'
 import { HttpStatus } from '../../../core/types/http-statuses'
@@ -14,10 +15,10 @@ export const createCommentHandler = async (
     res: Response
 ) => {
     try {
-        const { id } = req.params
+        const id: string = req.params.id as string
         const { content } = req.body
 
-        const userId = req.user!.id
+        const userId= req.user!.id
 
         const comment: Comment = {
             postId: id as string,

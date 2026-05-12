@@ -9,7 +9,7 @@ export const updateBlogHandler = async (
     res: Response
 ) => {
     try {
-        const id = req.params.id
+        const id: string = req.params.id as string
         await blogsService.findById(id)
         const { name, description, websiteUrl } = req.body
         const updatedBlog: BlogUpdateInputDto = {

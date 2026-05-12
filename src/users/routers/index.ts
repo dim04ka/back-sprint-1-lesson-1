@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { superAdminGuardMiddleware } from '../../core/middlewares/super-admin.guard-middleware'
 import { HttpStatus } from '../../core/types/http-statuses'
-import { usersService } from '../service/users.service'
+// import { usersService } from '../service/users.service'
 import { passwordValidation } from '../api/middleware/password.validation'
 import { loginValidation } from '../api/middleware/login.validation'
 import { emailValidation } from '../api/middleware/email.validation'
@@ -12,6 +12,7 @@ import { CreateUserDto } from '../types/create-user.dto'
 import { Request, Response } from 'express'
 import { sortQueryFieldsUtil } from '../../core/utils/sortQueryFields.util'
 import { usersQwRepository } from '../repository/user.query.repository'
+import { usersService } from '../../composition-root'
 
 export const usersRouter = Router()
 usersRouter.get(
@@ -45,12 +46,15 @@ usersRouter.post(
     async (req: Request<{}, {}, CreateUserDto>, res: Response) => {
         try {
             const { email, login, password } = req.body
-            const user = await usersService.create({
+            const result = await usersService.create({
                 email,
                 login,
                 password,
             })
-            const newUser = await usersQwRepository.findById(user)
+
+           
+
+            const newUser = await usersQwRepository.findById(result._id.toString())
             res.status(HttpStatus.Created).send(newUser)
         } catch (e: unknown) {
             errorsHandler(e, res)

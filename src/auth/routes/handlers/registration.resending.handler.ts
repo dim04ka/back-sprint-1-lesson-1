@@ -1,11 +1,11 @@
 import { errorsHandler } from '../../../core/errors/errors.handler'
 import { Request, Response } from 'express'
-import { usersRepository } from '../../../users/repository/users.repository'
+
 import { HttpStatus } from '../../../core/types/http-statuses'
-import { add } from 'date-fns'
-import { randomUUID } from 'crypto'
-import { emailExamples } from '../../adapters/emailExamples'
-import { nodemailerService } from '../../adapters/nodemailer.service'
+
+
+import { authService } from '../../../composition-root'
+import { ResultStatus } from '../../../common/result/resultCode'
 
 export const registrationEmailResendingHandler = async (
     req: Request<{}, {}, { email: string }>,
@@ -14,34 +14,13 @@ export const registrationEmailResendingHandler = async (
     try {
         const { email } = req.body
 
-        const user = await usersRepository.doesExistByEmail(email)
-        if (!user || user.emailConfirmation.isConfirmed) {
-            return res.status(HttpStatus.BadRequest).send({
-                message: 'email not found or not confirmed',
-            })
-        }
+        const result = await authService.resendEmail(email)
 
-        const newConfirmationCode = randomUUID()
-        const newExpirationDate = add(new Date(), { minutes: 30 })
-        user.emailConfirmation.confirmationCode = newConfirmationCode
-        user.emailConfirmation.expirationDate = newExpirationDate
-        await usersRepository.update(user)
+        if (result?.status === ResultStatus.Success)
+            return res.status(HttpStatus.NoContent)
+        return res.status(HttpStatus.BadRequest).send(result.extensions)
 
-        console.log('updated user==', user)
-
-        try {
-            await nodemailerService.sendEmail(
-                email,
-                user.emailConfirmation.confirmationCode,
-                emailExamples.registrationEmail
-            )
-        } catch (e: unknown) {
-            console.error('Send email error', e)
-        }
-
-        return res.status(HttpStatus.NoContent).send({
-            message: 'email resending',
-        })
+   
     } catch (e: unknown) {
         errorsHandler(e, res)
     }
