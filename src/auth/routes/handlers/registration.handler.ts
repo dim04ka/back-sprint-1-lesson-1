@@ -1,8 +1,6 @@
 import { Request, Response } from 'express'
 import { HttpStatus } from '../../../core/types/http-statuses'
-// import { usersService } from '../../../users/service/users.service'
-import { ResultStatus } from '../../../common/result/resultCode'
-import { authService } from '../../../composition-root'
+import { usersService } from '../../../users/service/users.service'
 
 export type RegistrationDto = {
     login: string
@@ -17,14 +15,17 @@ export const registrationHandler = async (
     try {
         const { email, login, password } = req.body
 
-        const result = await authService.createUser(login, email, password)
+        const result = await usersService.registerUser({
+            email,
+            login,
+            password,
+        })
 
+        console.log('result==', result)
 
-
-
-        if (result?.status === ResultStatus.Success)
-            return res.status(HttpStatus.NoContent).send(result.data)
-        return res.status(HttpStatus.BadRequest).send(result.extensions)
+        if (result?.status === 'success')
+            return res.status(HttpStatus.Created).send(result.data)
+        return res.status(HttpStatus.BadRequest).send(result.error)
     } catch (e: unknown) {
         // errorsHandler(e, res)
     }

@@ -9,7 +9,7 @@ export const updatePostHandler = async (
     res: Response
 ) => {
     try {
-        const id: string = req.params.id as string
+        const id = req.params.id
 
         const { title, shortDescription, content, blogId } = req.body
         const updatedPost: CreatePost = {

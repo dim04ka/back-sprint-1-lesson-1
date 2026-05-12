@@ -9,7 +9,7 @@ export const deletePostHandler = async (
     res: Response
 ) => {
     try {
-        const id: string = req.params.id as string
+        const id = req.params.id
         await postService.delete(id)
         res.sendStatus(HttpStatus.NoContent)
     } catch (e: unknown) {

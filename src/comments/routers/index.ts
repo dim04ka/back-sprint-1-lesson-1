@@ -1,15 +1,14 @@
 import { Router } from 'express'
 import { NextFunction, Request, Response } from 'express'
 import { commentsService } from '../service/comment.service'
-// import { usersRepository } from '../../users/repository/users.repository'
+import { usersRepository } from '../../users/repository/users.repository'
 import { accessTokenGuard } from '../../auth/routes/guard/access.token.guard'
-
 import {
     commentContentValidation,
     commentIdValidation,
 } from '../validation/comment.validation'
 import { inputValidationResultMiddleware } from '../../core/middlewares/validation'
-import { usersRepository } from '../../composition-root'
+
 export const commentsRouter = Router()
 
 const commentExistenceGuard = async (
@@ -28,7 +27,7 @@ const commentExistenceGuard = async (
 
 commentsRouter.get('/:id', async (req: Request, res: Response) => {
     try {
-        const id: string = req.params.id as string
+        const { id } = req.params
 
         const comment = await commentsService.findById(id)
         const user = await usersRepository.findById(comment!.userId)

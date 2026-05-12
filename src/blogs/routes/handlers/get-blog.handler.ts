@@ -6,7 +6,7 @@ import { errorsHandler } from '../../../core/errors/errors.handler'
 
 export const getBlogHandler = async (req: Request, res: Response) => {
     try {
-        const id: string = req.params.id as string
+        const id = req.params.id
         const blog = await blogsService.findById(id)
 
         const blogOutput = mapToBlogOutput(blog)

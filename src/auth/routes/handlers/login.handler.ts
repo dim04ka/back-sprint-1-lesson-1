@@ -1,10 +1,8 @@
 import { Request, Response } from 'express'
 import { LoginDto } from '../../types/login.dto'
-// import { authService } from '../../service/auth.service'
+import { authService } from '../../service/auth.service'
 import { HttpStatus } from '../../../core/types/http-statuses'
 import { errorsHandler } from '../../../core/errors/errors.handler'
-import { authService } from '../../../composition-root'
-import { ResultStatus } from '../../../common/result/resultCode'
 
 export const loginHandler = async (
     req: Request<{}, {}, LoginDto>,
@@ -13,16 +11,16 @@ export const loginHandler = async (
     try {
         const { loginOrEmail, password } = req.body
 
-        const result = await authService.login({
+        const accessToken = await authService.login({
             loginOrEmail,
             password,
         })
 
-        if (result?.status === ResultStatus.Success) {
-            return res.send(result.data)
+        if (!accessToken) {
+            return res.sendStatus(HttpStatus.Unauthorized)
         }
 
-        return res.status(HttpStatus.BadRequest).send({errorsMessages: result.extensions})
+        return res.send(accessToken)
     } catch (e: unknown) {
         errorsHandler(e, res)
     }
