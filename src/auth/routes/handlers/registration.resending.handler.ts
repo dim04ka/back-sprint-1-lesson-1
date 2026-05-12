@@ -17,7 +17,12 @@ export const registrationEmailResendingHandler = async (
         const user = await usersRepository.doesExistByEmail(email)
         if (!user || user.emailConfirmation.isConfirmed) {
             return res.status(HttpStatus.BadRequest).send({
-                message: 'email not found or not confirmed',
+                errorsMessages: [
+                    {
+                        field: 'email',
+                        message: 'email not found or not confirmed',
+                    }
+                ]
             })
         }
 
@@ -27,7 +32,7 @@ export const registrationEmailResendingHandler = async (
         user.emailConfirmation.expirationDate = newExpirationDate
         await usersRepository.update(user)
 
-        console.log('updated user==', user)
+     
 
         try {
             await nodemailerService.sendEmail(
