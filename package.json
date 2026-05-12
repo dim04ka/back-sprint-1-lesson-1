@@ -15,7 +15,6 @@
     "keywords": [],
     "author": "",
     "license": "ISC",
-    "packageManager": "pnpm@9.4.0+sha1.9217c800d4ab947a7aee520242a7b70d64fc7638",
     "dependencies": {
         "bcrypt": "^6.0.0",
         "date-fns": "^4.1.0",
