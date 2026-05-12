@@ -18,7 +18,12 @@ export const registrationConfirmationHandler = async (
             user.emailConfirmation.expirationDate < new Date()
         ) {
             return res.status(HttpStatus.BadRequest).send({
-                message: 'code not found or expired',
+                errorsMessages: [
+                    {
+                        field: 'code',
+                        message: 'code not found or expired',
+                    }
+                ]
             })
         }
 
