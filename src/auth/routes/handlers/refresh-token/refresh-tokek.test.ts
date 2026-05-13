@@ -84,6 +84,25 @@ describe('Refresh token API', () => {
         expect(newRefreshTokenCookie).toContain('Secure')
     })
 
+    it('should return 401 on logout when refresh token was invalidated by refresh-token', async () => {
+        const loginRes = await loginUser()
+        const oldRefreshTokenCookie = getRefreshTokenCookie(
+            getCookies(loginRes.headers['set-cookie'])
+        )
+
+        expect(oldRefreshTokenCookie).toBeDefined()
+
+        await request(app)
+            .post(`${ROUTES.AUTH}/refresh-token`)
+            .set('Cookie', oldRefreshTokenCookie as string)
+            .expect(HttpStatus.Ok)
+
+        await request(app)
+            .post(`${ROUTES.AUTH}/logout`)
+            .set('Cookie', oldRefreshTokenCookie as string)
+            .expect(HttpStatus.Unauthorized)
+    })
+
     it('should not refresh tokens without refresh token cookie', async () => {
         await request(app)
             .post(`${ROUTES.AUTH}/refresh-token`)

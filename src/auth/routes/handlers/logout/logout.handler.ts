@@ -17,6 +17,12 @@ export const logoutHandler = async (req: Request, res: Response) => {
             return res.sendStatus(HttpStatus.Unauthorized)
         }
 
+        const revokedRefreshToken =
+            await refreshTokenService.findByToken(refreshTokenCookie)
+        if (revokedRefreshToken) {
+            return res.sendStatus(HttpStatus.Unauthorized)
+        }
+
         await refreshTokenService.add(
             payload.userId,
             refreshTokenCookie
