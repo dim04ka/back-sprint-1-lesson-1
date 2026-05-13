@@ -5,6 +5,7 @@ import {
     blogsCollection,
     commentsCollection,
     usersCollection,
+    refreshTokensCollection,
 } from '../db/mongo.db'
 import { postsCollection } from '../db/mongo.db'
 import { HttpStatus } from '../core/types/http-statuses'
@@ -19,6 +20,7 @@ testingRouter.delete(
             postsCollection.deleteMany(),
             usersCollection.deleteMany(),
             commentsCollection.deleteMany(),
+            refreshTokensCollection.deleteMany(),
         ])
         res.sendStatus(HttpStatus.NoContent)
     }

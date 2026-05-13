@@ -1,6 +1,6 @@
-import { HttpStatus } from '../../../core/types/http-statuses'
+import { HttpStatus } from '../../../../core/types/http-statuses'
 import { Request, Response } from 'express'
-import { usersQwRepository } from '../../../users/repository/user.query.repository'
+import { usersQwRepository } from '../../../../users/repository/user.query.repository'
 
 export const meHandler = async (req: Request, res: Response) => {
     try {
@@ -8,7 +8,11 @@ export const meHandler = async (req: Request, res: Response) => {
 
         const me = await usersQwRepository.findById(req.user.id)
 
-        return res.status(HttpStatus.Ok).send(me)
+        return res.status(HttpStatus.Ok).send({
+            email: me?.email,
+            login: me?.login,
+            userId: me?.id,
+        })
     } catch (e: unknown) {
         // errorsHandler(e, res)
     }
