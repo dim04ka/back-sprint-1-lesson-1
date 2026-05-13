@@ -25,7 +25,6 @@ export const refreshTokenHandler = async (
         if (refreshTokenChecked) {
             return res.sendStatus(HttpStatus.Unauthorized)
         }
-        debugger
 
         await refreshTokenService.add(
             payload.userId,
