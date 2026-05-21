@@ -12,6 +12,7 @@ const BLOGS_COLLECTION_NAME = 'blogs'
 const USERS_COLLECTION_NAME = 'users'
 const COMMENTS_COLLECTION_NAME = 'comments'
 const REFRESH_TOKENS_COLLECTION_NAME = 'refreshTokens'
+const SESSIONS_COLLECTION_NAME = 'sessions'
 
 export let client: MongoClient
 
@@ -23,6 +24,13 @@ export let refreshTokensCollection: Collection<{
     userId: string
     token: string
 }>
+
+export type SessionType = {
+    IP: string
+    URL: string
+    date: Date
+}
+export let sessionsCollection: Collection<SessionType>
 
 // Подключения к бд
 export async function runDB(url: string): Promise<void> {
@@ -40,6 +48,10 @@ export async function runDB(url: string): Promise<void> {
         userId: string
         token: string
     }>(REFRESH_TOKENS_COLLECTION_NAME)
+
+    sessionsCollection = db.collection<SessionType>(
+        SESSIONS_COLLECTION_NAME
+    )
 
     try {
         console.log('Connecting to the database...')

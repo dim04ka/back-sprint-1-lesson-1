@@ -14,6 +14,7 @@ const bootstrap = async (): Promise<Express> => {
     }
 
     app = express()
+    app.set('trust proxy', true)
 
     setupApp(app)
 

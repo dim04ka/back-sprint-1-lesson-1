@@ -1,7 +1,10 @@
 import { Router } from 'express'
 import { passwordValidation } from '../../users/api/middleware/password.validation'
 import { loginOrEmailValidation } from '../../users/api/middleware/login.or.emaol.validation'
-import { inputValidationResultMiddleware } from '../../core/middlewares/validation/input-validtion-result.middleware'
+import {
+    inputValidationResultMiddleware,
+    limitedRequestMiddleware,
+} from '../../core/middlewares/validation'
 import { accessTokenGuard } from './guard/access.token.guard'
 import {
     loginHandler,
@@ -24,6 +27,7 @@ authRouter.post(
     '/registration-confirmation',
     codeValidation,
     inputValidationResultMiddleware,
+    limitedRequestMiddleware({}),
     registrationConfirmationHandler
 )
 
@@ -31,6 +35,7 @@ authRouter.post(
     '/registration-email-resending',
     emailValidation,
     inputValidationResultMiddleware,
+    limitedRequestMiddleware({}),
     registrationEmailResendingHandler
 )
 
@@ -38,6 +43,7 @@ authRouter.post(
     '/registration',
     registrationValidationMiddleware,
     inputValidationResultMiddleware,
+    limitedRequestMiddleware({}),
     registrationHandler
 )
 
@@ -46,6 +52,7 @@ authRouter.post(
     passwordValidation,
     loginOrEmailValidation,
     inputValidationResultMiddleware,
+    limitedRequestMiddleware({}),
     loginHandler
 )
 

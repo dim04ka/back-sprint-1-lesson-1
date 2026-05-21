@@ -27,8 +27,11 @@ export const loginHandler = async (
             return res.sendStatus(HttpStatus.BadRequest)
         }
 
-        res.cookie('refreshToken', refreshToken, {httpOnly: true,secure: true})
-        return res.send({accessToken})
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: true,
+        })
+        return res.send({ accessToken })
     } catch (e: unknown) {
         errorsHandler(e, res)
     }
