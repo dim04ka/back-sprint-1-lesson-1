@@ -1,4 +1,4 @@
-export * from './login.handler'
+export * from './login/login.handler'
 export * from './me/me.handler'
 export * from './registration.handler'
 export * from './registration.resending.handler'

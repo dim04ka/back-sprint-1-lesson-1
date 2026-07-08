@@ -21,10 +21,13 @@ export const authService = {
         if (!isPasswordCorrect) {
             return null
         }
-        const { accessToken, refreshToken } = await jwtService.createToken(
-            user._id.toString()
-        )
+        const { accessToken, refreshToken } =
+            await jwtService.createToken(user._id.toString())
 
-        return { accessToken, refreshToken }
-    }
+        return {
+            accessToken,
+            refreshToken,
+            user_id: user._id.toString(),
+        }
+    },
 }

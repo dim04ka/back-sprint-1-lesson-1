@@ -6,6 +6,7 @@ import {
     commentsCollection,
     usersCollection,
     refreshTokensCollection,
+    raceLimitedRequestsCollection,
     sessionsCollection,
 } from '../db/mongo.db'
 import { postsCollection } from '../db/mongo.db'
@@ -22,6 +23,7 @@ testingRouter.delete(
             usersCollection.deleteMany(),
             commentsCollection.deleteMany(),
             refreshTokensCollection.deleteMany(),
+            raceLimitedRequestsCollection.deleteMany(),
             sessionsCollection.deleteMany(),
         ])
         res.sendStatus(HttpStatus.NoContent)

@@ -8,4 +8,5 @@ export const ROUTES = {
     USERS: `/users`,
     COMMENTS: `/comments`,
     TESTING: `/testing`,
+    SECURITY_DEVICES: `/security/devices`,
 }

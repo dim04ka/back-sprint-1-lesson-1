@@ -4,7 +4,11 @@ import request from 'supertest'
 import { ADMIN_PASSWORD, ADMIN_USERNAME } from '../../../src/const'
 import { HttpStatus } from '../../../src/core/types/http-statuses'
 import { ROUTES } from '../../../src/core/path'
-import { runDB, stopDb } from '../../../src/db/mongo.db'
+import {
+    runDB,
+    raceLimitedRequestsCollection,
+    stopDb,
+} from '../../../src/db/mongo.db'
 import { setupApp } from '../../../src/setup-app'
 
 const testUser = {
@@ -56,7 +60,9 @@ describe('Login API', () => {
         })
         expect(res.body.accessToken.length).toBeGreaterThan(0)
         expect(
-            cookies.some((cookie) => cookie.startsWith('refreshToken='))
+            cookies.some((cookie) =>
+                cookie.startsWith('refreshToken=')
+            )
         ).toBe(true)
         expect(cookies?.[0]).toContain('HttpOnly')
         expect(cookies?.[0]).toContain('Secure')
@@ -111,5 +117,44 @@ describe('Login API', () => {
                 expect.objectContaining({ field: 'password' }),
             ])
         )
+    })
+
+    it('should login user 4 times with different user agents', async () => {
+        await raceLimitedRequestsCollection.deleteMany({})
+
+        const userAgents = [
+            'Mozilla/5.0 Chrome',
+            'Mozilla/5.0 Firefox',
+            'Mozilla/5.0 Safari',
+            'Mozilla/5.0 Edge',
+        ]
+
+        for (const userAgent of userAgents) {
+            const res = await request(app)
+                .post(`${ROUTES.AUTH}/login`)
+                .set('User-Agent', userAgent)
+                .send({
+                    loginOrEmail: testUser.login,
+                    password: testUser.password,
+                })
+                .expect(HttpStatus.Ok)
+
+            const setCookieHeader = res.headers['set-cookie']
+            const cookies = Array.isArray(setCookieHeader)
+                ? setCookieHeader
+                : [setCookieHeader].filter(
+                      (cookie): cookie is string => Boolean(cookie)
+                  )
+
+            expect(res.body).toEqual({
+                accessToken: expect.any(String),
+            })
+            expect(res.body.accessToken.length).toBeGreaterThan(0)
+            expect(
+                cookies.some((cookie) =>
+                    cookie.startsWith('refreshToken=')
+                )
+            ).toBe(true)
+        }
     })
 })
