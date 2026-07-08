@@ -4,7 +4,7 @@ import { Request, Response } from 'express'
 import { emailExamples } from '../../../adapters/emailExamples'
 import { nodemailerService } from '../../../adapters/nodemailer.service'
 import { randomUUID } from 'crypto'
-import { add } from 'date-fns'
+
 import { errorsHandler } from '../../../../core/errors/errors.handler'
 
 export const passwordRecoveryHandler = async (
@@ -27,17 +27,13 @@ export const passwordRecoveryHandler = async (
             },
         })
 
-        // await nodemailerService.sendEmail(
-        //     email,
-        //     tempConfirmationCode,
-        //     emailExamples.passwordRecoveryEmail
-        // )
+        await nodemailerService.sendEmail(
+            email,
+            tempConfirmationCode,
+            emailExamples.passwordRecoveryEmail
+        )
 
-        return res
-            .status(HttpStatus.Ok)
-            .send({ recoveryCode: tempConfirmationCode })
-        // .status(HttpStatus.NoContent)
-        // .send({ recoveryCode: tempConfirmationCode })
+        return res.status(HttpStatus.NoContent)
     } catch (e: unknown) {
         errorsHandler(e, res)
     }
