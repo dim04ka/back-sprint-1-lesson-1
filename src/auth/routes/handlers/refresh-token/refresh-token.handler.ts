@@ -2,7 +2,9 @@ import { errorsHandler } from '../../../../core/errors/errors.handler'
 import { Request, Response } from 'express'
 import { HttpStatus } from '../../../../core/types/http-statuses'
 import { jwtService } from '../../../adapters/jwt.service'
-import { refreshTokenService } from './composiiton'
+import { securityDevicesService } from '../../../../securityDevices/services/securityDevices.service'
+
+const getJwtDate = (seconds: number): Date => new Date(seconds * 1000)
 
 export const refreshTokenHandler = async (
     req: Request,
@@ -20,19 +22,48 @@ export const refreshTokenHandler = async (
         if (!payload) {
             return res.sendStatus(HttpStatus.Unauthorized)
         }
-        const refreshTokenChecked =
-            await refreshTokenService.findByToken(refreshTokenCookie)
-        if (refreshTokenChecked) {
+
+        const isRefreshSessionValid =
+            await securityDevicesService.validateRefreshSession({
+                userId: payload.userId,
+                deviceId: payload.deviceId,
+                iat: getJwtDate(payload.iat),
+            })
+        if (!isRefreshSessionValid) {
             return res.sendStatus(HttpStatus.Unauthorized)
         }
 
-        await refreshTokenService.add(
-            payload.userId,
-            refreshTokenCookie
-        )
-
         const { accessToken, refreshToken } =
-            await jwtService.createToken(payload.userId)
+            await jwtService.createToken(
+                payload.userId,
+                payload.deviceId,
+                {
+                    refreshTokenIat: Math.max(
+                        Math.floor(Date.now() / 1000),
+                        payload.iat + 1
+                    ),
+                }
+            )
+
+        const newPayload = await jwtService.decodeToken(refreshToken)
+        if (
+            !newPayload ||
+            typeof newPayload.iat !== 'number' ||
+            typeof newPayload.exp !== 'number'
+        ) {
+            return res.sendStatus(HttpStatus.Unauthorized)
+        }
+
+        const isSecurityDeviceUpdated =
+            await securityDevicesService.updateSecurityDeviceIat({
+                deviceId: payload.deviceId,
+                currentIat: getJwtDate(payload.iat),
+                newIat: getJwtDate(newPayload.iat),
+                exp: getJwtDate(newPayload.exp),
+            })
+        if (!isSecurityDeviceUpdated) {
+            return res.sendStatus(HttpStatus.Unauthorized)
+        }
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,

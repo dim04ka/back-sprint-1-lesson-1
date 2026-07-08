@@ -17,10 +17,12 @@ export const loginHandler = async (
         const { loginOrEmail, password } = req.body
         const userAgent = req.headers['user-agent'] || ''
         const ip = req.ip || ''
+        const deviceId = randomUUID()
 
         const result = await authService.login({
             loginOrEmail,
             password,
+            deviceId,
         })
 
         if (!result) {
@@ -44,13 +46,13 @@ export const loginHandler = async (
         }
         const { iat, exp } = decodedRefreshToken
 
-        sessionsCollection.insertOne({
+        await sessionsCollection.insertOne({
             user_id,
-            device_id: randomUUID(),
-            iat: new Date(iat),
+            device_id: deviceId,
+            iat: new Date(iat * 1000),
             device_name: userAgent,
             ip: ip,
-            exp: new Date(exp),
+            exp: new Date(exp * 1000),
         })
 
         res.cookie('refreshToken', refreshToken, {

@@ -6,9 +6,11 @@ export const authService = {
     async login({
         loginOrEmail,
         password,
+        deviceId,
     }: {
         loginOrEmail: string
         password: string
+        deviceId: string
     }) {
         const user =
             await usersRepository.findByLoginOrEmail(loginOrEmail)
@@ -22,7 +24,7 @@ export const authService = {
             return null
         }
         const { accessToken, refreshToken } =
-            await jwtService.createToken(user._id.toString())
+            await jwtService.createToken(user._id.toString(), deviceId)
 
         return {
             accessToken,

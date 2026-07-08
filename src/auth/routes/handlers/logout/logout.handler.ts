@@ -2,7 +2,9 @@ import { HttpStatus } from '../../../../core/types/http-statuses'
 import { Request, Response } from 'express'
 import { errorsHandler } from '../../../../core/errors/errors.handler'
 import { jwtService } from '../../../adapters/jwt.service'
-import { refreshTokenService } from '../refresh-token/composiiton'
+import { securityDevicesService } from '../../../../securityDevices/services/securityDevices.service'
+
+const getJwtDate = (seconds: number): Date => new Date(seconds * 1000)
 
 export const logoutHandler = async (req: Request, res: Response) => {
     try {
@@ -17,16 +19,15 @@ export const logoutHandler = async (req: Request, res: Response) => {
             return res.sendStatus(HttpStatus.Unauthorized)
         }
 
-        const revokedRefreshToken =
-            await refreshTokenService.findByToken(refreshTokenCookie)
-        if (revokedRefreshToken) {
+        const isSecurityDeviceDeleted =
+            await securityDevicesService.deleteSecurityDeviceByDeviceIdAndIat({
+                deviceId: payload.deviceId,
+                iat: getJwtDate(payload.iat),
+            })
+        if (!isSecurityDeviceDeleted) {
             return res.sendStatus(HttpStatus.Unauthorized)
         }
 
-        await refreshTokenService.add(
-            payload.userId,
-            refreshTokenCookie
-        )
         res.clearCookie('refreshToken')
         return res.sendStatus(HttpStatus.NoContent)
     } catch (e: unknown) {

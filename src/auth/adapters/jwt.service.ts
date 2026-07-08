@@ -1,15 +1,38 @@
 import jwt, { type SignOptions } from 'jsonwebtoken'
 import { appConfig } from '../../common/config/config'
 
+type RefreshTokenPayload = {
+    userId: string
+    deviceId: string
+    iat: number
+    exp: number
+}
+
+type CreateTokenOptions = {
+    refreshTokenIat?: number
+}
+
 export const jwtService = {
     async createToken(
-        userId: string
+        userId: string,
+        deviceId: string,
+        options?: CreateTokenOptions
     ): Promise<{ accessToken: string; refreshToken: string }> {
         const accessToken = jwt.sign({ userId }, appConfig.AC_SECRET, {
             expiresIn: appConfig.AC_TIME as SignOptions['expiresIn'],
         })
+        const refreshTokenPayload: {
+            userId: string
+            deviceId: string
+            iat?: number
+        } = { userId, deviceId }
+
+        if (options?.refreshTokenIat) {
+            refreshTokenPayload.iat = options.refreshTokenIat
+        }
+
         const refreshToken = jwt.sign(
-            { userId },
+            refreshTokenPayload,
             appConfig.RT_SECRET as string,
             {
                 expiresIn: appConfig.RT_TIME as SignOptions['expiresIn'],
@@ -35,11 +58,12 @@ export const jwtService = {
     },
     async verifyRefreshToken(
         token: string
-    ): Promise<{ userId: string } | null> {
+    ): Promise<RefreshTokenPayload | null> {
         try {
-            return jwt.verify(token, appConfig.RT_SECRET as string) as {
-                userId: string
-            }
+            return jwt.verify(
+                token,
+                appConfig.RT_SECRET as string
+            ) as RefreshTokenPayload
         } catch (error) {
             console.error('Refresh token verify some error')
             return null
