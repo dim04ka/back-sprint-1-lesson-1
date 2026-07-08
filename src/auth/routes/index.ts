@@ -14,6 +14,8 @@ import {
     registrationConfirmationHandler,
     refreshTokenHandler,
     logoutHandler,
+    passwordRecoveryHandler,
+    newPasswordHandler,
 } from './handlers'
 import {
     registrationValidationMiddleware,
@@ -61,3 +63,18 @@ authRouter.get('/me', accessTokenGuard, meHandler)
 authRouter.post('/refresh-token', refreshTokenHandler)
 
 authRouter.post('/logout', logoutHandler)
+
+authRouter.post(
+    '/password-recovery',
+    limitedRequestMiddleware({}),
+    passwordRecoveryHandler
+)
+
+authRouter.post(
+    '/new-password',
+    // passwordValidation,
+    // codeValidation,
+    // inputValidationResultMiddleware,
+    limitedRequestMiddleware({}),
+    newPasswordHandler
+)
