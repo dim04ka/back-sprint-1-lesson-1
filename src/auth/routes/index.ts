@@ -1,5 +1,8 @@
 import { Router } from 'express'
-import { passwordValidation } from '../../users/api/middleware/password.validation'
+import {
+    newPasswordValidation,
+    passwordValidation,
+} from '../../users/api/middleware/password.validation'
 import { loginOrEmailValidation } from '../../users/api/middleware/login.or.emaol.validation'
 import {
     inputValidationResultMiddleware,
@@ -66,13 +69,14 @@ authRouter.post('/logout', logoutHandler)
 
 authRouter.post(
     '/password-recovery',
+    emailValidation,
     limitedRequestMiddleware({}),
     passwordRecoveryHandler
 )
 
 authRouter.post(
     '/new-password',
-    // passwordValidation,
+    newPasswordValidation,
     // codeValidation,
     // inputValidationResultMiddleware,
     limitedRequestMiddleware({}),

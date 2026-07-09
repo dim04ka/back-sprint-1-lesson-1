@@ -59,7 +59,7 @@ export const loginHandler = async (
             httpOnly: true,
             secure: true,
         })
-        console.log('accessToken=', accessToken)
+
         return res.send({ accessToken })
     } catch (e: unknown) {
         errorsHandler(e, res)
