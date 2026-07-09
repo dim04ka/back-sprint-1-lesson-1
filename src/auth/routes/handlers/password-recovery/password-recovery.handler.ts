@@ -33,7 +33,7 @@ export const passwordRecoveryHandler = async (
             emailExamples.passwordRecoveryEmail
         )
 
-        return res.status(HttpStatus.NoContent)
+        return res.status(HttpStatus.NoContent).send()
     } catch (e: unknown) {
         errorsHandler(e, res)
     }

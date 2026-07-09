@@ -56,7 +56,7 @@ export const usersService = {
 
         const newUser = new User(login, email, passwordHash)
 
-        console.log('newUser==', newUser)
+
 
         await usersRepository.create(newUser)
 
