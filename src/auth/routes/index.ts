@@ -70,6 +70,7 @@ authRouter.post('/logout', logoutHandler)
 authRouter.post(
     '/password-recovery',
     emailValidation,
+    inputValidationResultMiddleware,
     limitedRequestMiddleware({}),
     passwordRecoveryHandler
 )
@@ -77,8 +78,7 @@ authRouter.post(
 authRouter.post(
     '/new-password',
     newPasswordValidation,
-    // codeValidation,
-    // inputValidationResultMiddleware,
+    inputValidationResultMiddleware,
     limitedRequestMiddleware({}),
     newPasswordHandler
 )
