@@ -14,11 +14,39 @@ export const commentLikeStatusHandler = async (
     const userId = req.user!.id
 
     try {
-        await commentsService.createLikeStatus(id, userId, likeStatus)
-        res.sendStatus(204)
+        const like = await commentsService.findLikeByCommentIdAndUserId(
+            id,
+            userId
+        )
+
+        if (likeStatus === 'None') {
+            await commentsService.deleteCommentLikeStatus(id, userId)
+
+            return res.sendStatus(204)
+        }
+
+        if (!like) {
+            await commentsService.createLikeStatus(
+                id,
+                userId,
+                likeStatus
+            )
+
+            return res.sendStatus(204)
+        }
+
+        if (like.status === likeStatus) {
+            return res.sendStatus(204)
+        }
+
+        await commentsService.updateCommentLikeStatus(
+            id,
+            userId,
+            likeStatus
+        )
+
+        return res.sendStatus(204)
     } catch (error) {
         return res.status(400).send({ message: 'Bad Request' })
     }
-
-    res.sendStatus(204)
 }

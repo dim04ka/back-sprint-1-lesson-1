@@ -41,11 +41,22 @@ export class CommentsService {
             queryDto,
         })
     }
+
     async findLikesByCommentId(commentId: string) {
         return await this.likesRepository.findLikesByCommentId(
             commentId
         )
     }
+    async findLikeByCommentIdAndUserId(
+        commentId: string,
+        userId: string
+    ) {
+        return await this.likesRepository.findLikeByCommentIdAndUserId(
+            commentId,
+            userId
+        )
+    }
+
     async createLikeStatus(
         commentId: string,
         userId: string,
@@ -59,11 +70,19 @@ export class CommentsService {
     }
     async updateCommentLikeStatus(
         commentId: string,
+        userId: string,
         likeStatus: 'Like' | 'Dislike' | 'None'
     ) {
         return await this.likesRepository.updateLikeStatus(
             commentId,
+            userId,
             likeStatus
+        )
+    }
+    async deleteCommentLikeStatus(commentId: string, userId: string) {
+        return await this.likesRepository.deleteLikeStatus(
+            commentId,
+            userId
         )
     }
 }
