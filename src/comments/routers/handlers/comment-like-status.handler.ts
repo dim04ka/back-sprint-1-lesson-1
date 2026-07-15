@@ -12,12 +12,7 @@ export const commentLikeStatusHandler = async (
     const { id } = req.params
     const { likeStatus } = req.body
     const userId = req.user!.id
-    const comment = res.locals.comment as Awaited<
-        ReturnType<typeof commentsService.findById>
-    >
-    if (comment.userId !== userId) {
-        return res.status(403).send({ message: 'Forbidden' })
-    }
+
     try {
         await commentsService.createLikeStatus(id, userId, likeStatus)
         res.sendStatus(204)

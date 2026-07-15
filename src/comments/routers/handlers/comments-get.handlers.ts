@@ -1,3 +1,4 @@
+import { jwtService } from '../../../auth/adapters/jwt.service'
 import {
     usersRepository,
     commentsService,
@@ -12,6 +13,18 @@ export const commentsGetHandler = async (
     try {
         const id = req.params.id
 
+        let requestedUserId = null
+
+        const token = req.headers.authorization?.split(' ')[1]
+        if (token) {
+            const payload = await jwtService.verifyToken(token)
+
+            if (payload) {
+                const { userId } = payload
+                requestedUserId = userId
+            }
+        }
+
         const comment = await commentsService.findById(id)
         const user = await usersRepository.findById(comment!.userId)
         const likes = await commentsService.findLikesByCommentId(id)
@@ -21,9 +34,10 @@ export const commentsGetHandler = async (
         const dislikesCount = likes.filter(
             (like) => like.status === 'Dislike'
         ).length
-        const myStatus =
-            likes.find((like) => like.userId === user?.id)?.status ??
-            'None'
+        const myStatus = requestedUserId
+            ? (likes.find((like) => like.userId === requestedUserId)
+                  ?.status ?? 'None')
+            : 'None'
 
         const commentOutput = {
             id: comment._id.toString(),

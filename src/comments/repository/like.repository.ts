@@ -10,7 +10,6 @@ export class LikeRepository {
         userId: string,
         likeStatus: 'Like' | 'Dislike' | 'None'
     ) {
-        debugger
         return await LikeModel.create({
             commentId,
             userId,

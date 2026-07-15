@@ -61,7 +61,6 @@ export class CommentsService {
         commentId: string,
         likeStatus: 'Like' | 'Dislike' | 'None'
     ) {
-        debugger
         return await this.likesRepository.updateLikeStatus(
             commentId,
             likeStatus
