@@ -1,25 +1,26 @@
-import { blogsRepository } from '../repository/blogs.repository'
+import { BlogsRepository } from '../repository/blogs.repository'
 import { Blog, BlogUpdateInputDto } from '../domain'
 import { WithId } from 'mongodb'
 import { BlogQueryInput } from '../routes/input/blog-query.input'
 
-export const blogsService = {
+export class BlogsService {
+    constructor(private readonly blogsRepository: BlogsRepository) {}
     async findMany(
         queryDto: BlogQueryInput
     ): Promise<{ items: WithId<Blog>[]; totalCount: number }> {
-        return blogsRepository.findMany(queryDto)
-    },
+        return this.blogsRepository.findMany(queryDto)
+    }
     async findById(id: string): Promise<WithId<Blog>> {
-        return blogsRepository.findById(id)
-    },
+        return this.blogsRepository.findById(id)
+    }
     async delete(id: string): Promise<void> {
-        await blogsRepository.delete(id)
+        await this.blogsRepository.delete(id)
         return
-    },
+    }
 
     async create(blog: Blog): Promise<{ id: string }> {
-        return await blogsRepository.create(blog)
-    },
+        return await this.blogsRepository.create(blog)
+    }
     async update({
         id,
         blog,
@@ -27,7 +28,7 @@ export const blogsService = {
         id: string
         blog: BlogUpdateInputDto
     }): Promise<void> {
-        await blogsRepository.update({ id, blog })
+        await this.blogsRepository.update({ id, blog })
         return
-    },
+    }
 }

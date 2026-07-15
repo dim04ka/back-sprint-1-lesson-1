@@ -2,7 +2,7 @@ import { errorsHandler } from '../../../../core/errors/errors.handler'
 import { Request, Response } from 'express'
 import { HttpStatus } from '../../../../core/types/http-statuses'
 import { jwtService } from '../../../adapters/jwt.service'
-import { securityDevicesService } from '../../../../securityDevices/services/securityDevices.service'
+import { securityDevicesService } from '../../../../composition-root'
 
 const getJwtDate = (seconds: number): Date => new Date(seconds * 1000)
 

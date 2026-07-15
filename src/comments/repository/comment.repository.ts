@@ -1,39 +1,40 @@
-import { commentsCollection } from '../../db/mongo.db'
+import { CommentModel } from '../../db/mongo.db/schemes/comment'
 import { Comment } from '../types/comment'
-import { usersRepository } from '../../users/repository/users.repository'
 import { PostQueryInput } from '../../posts/routes/input/post-query.input'
 import { ObjectId } from 'mongodb'
 import { RepositoryNotFoundError } from '../../core/errors/repository-not-found.error'
+import { UserModel } from '../../db/mongo.db/schemes/users'
 
-export const commentsRepository = {
+export class CommentsRepository {
+    constructor() {}
     async update(id: string, content: string): Promise<void> {
-        const result = await commentsCollection.updateOne(
+        const result = await CommentModel.updateOne(
             { _id: new ObjectId(id) },
             { $set: { content } }
         )
         if (result.matchedCount === 0) {
             throw new RepositoryNotFoundError('Comment not found')
         }
-    },
+    }
     async delete(id: string): Promise<void> {
-        const result = await commentsCollection.deleteOne({
+        const result = await CommentModel.deleteOne({
             _id: new ObjectId(id),
         })
         if (result.deletedCount === 0) {
             throw new RepositoryNotFoundError('Comment not found')
         }
         return
-    },
+    }
     async findById(id: string) {
-        const comment = await commentsCollection.findOne({
+        const comment = await CommentModel.findOne({
             _id: new ObjectId(id),
         })
         return comment
-    },
+    }
     async create(comment: Comment) {
-        const newComment = await commentsCollection.insertOne(comment)
-        return newComment.insertedId.toString()
-    },
+        const newComment = await CommentModel.insertOne(comment)
+        return newComment._id.toString()
+    }
 
     async findMany({
         postId,
@@ -48,22 +49,19 @@ export const commentsRepository = {
         const skip = (pageNumber - 1) * pageSize
         const sortDirectionNumber = sortDirection === 'asc' ? 1 : -1
 
-        const comments = await commentsCollection
-            .find({ postId })
+        const comments = await CommentModel.find({ postId })
             .sort({ [sortBy]: sortDirectionNumber })
             .skip(skip)
             .limit(pageSize)
-            .toArray()
+            .exec()
 
-        const totalCount = await commentsCollection.countDocuments({
+        const totalCount = await CommentModel.countDocuments({
             postId,
         })
 
         const commentsWithUser = await Promise.all(
             comments.map(async (comment) => {
-                const user = await usersRepository.findById(
-                    comment.userId
-                )
+                const user = await UserModel.findById(comment.userId)
 
                 return {
                     id: comment._id.toString(),
@@ -80,5 +78,5 @@ export const commentsRepository = {
             items: commentsWithUser,
             totalCount,
         }
-    },
+    }
 }

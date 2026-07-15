@@ -18,7 +18,7 @@ describe('Login rate limit', () => {
     setupApp(app)
 
     beforeAll(async () => {
-        await runDB(process.env.MONGO_CONNECT_URL || '')
+        await runDB()
 
         await request(app)
             .delete(`${ROUTES.TESTING}/all-data`)

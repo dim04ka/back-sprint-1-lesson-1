@@ -1,9 +1,7 @@
 import { Request, Response } from 'express'
 import { HttpStatus } from '../../../core/types/http-statuses'
-import { blogsService } from '../../application/blogs.service'
+import { blogsService } from '../../../composition-root'
 import { BlogQueryInput } from '../input/blog-query.input'
-import { matchedData } from 'express-validator'
-import { setDefaultSortAndPaginationIfNotExist } from '../../../core/helpers/set-default-sort-and-pagination'
 import { mapToBlogListPaginatedOutput } from '../mapper/map-to-blog-list-paginated-output.util'
 import { errorsHandler } from '../../../core/errors/errors.handler'
 
@@ -12,14 +10,6 @@ export const getBlogListHandler = async (
     res: Response
 ) => {
     try {
-        // const sanitizedQuery = matchedData<BlogQueryInput>(req, {
-        //     locations: ['query'],
-        //     includeOptionals: true,
-        // })
-
-        // const queryInput =
-        //     setDefaultSortAndPaginationIfNotExist(sanitizedQuery)
-
         const queryInput = {
             pageNumber: Number(req.query.pageNumber) || 1,
             pageSize: Number(req.query.pageSize) || 10,

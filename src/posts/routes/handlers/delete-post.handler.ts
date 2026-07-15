@@ -1,7 +1,6 @@
 import { Request, Response } from 'express'
 import { HttpStatus } from '../../../core/types/http-statuses'
-import { postsRepository } from '../../repository'
-import { postService } from '../../application/post.service'
+import { postsService } from '../../../composition-root'
 import { errorsHandler } from '../../../core/errors/errors.handler'
 
 export const deletePostHandler = async (
@@ -10,7 +9,7 @@ export const deletePostHandler = async (
 ) => {
     try {
         const id = req.params.id
-        await postService.delete(id)
+        await postsService.delete(id)
         res.sendStatus(HttpStatus.NoContent)
     } catch (e: unknown) {
         errorsHandler(e, res)

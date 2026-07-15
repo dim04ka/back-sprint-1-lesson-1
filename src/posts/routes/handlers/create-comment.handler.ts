@@ -1,32 +1,35 @@
 import { Request, Response } from 'express'
-import { commentsService } from '../../../comments/service/comment.service'
+import {
+    commentsService,
+    usersRepository,
+} from '../../../composition-root'
+
+import { DomainError } from '../../../core/errors/domain.error'
+import { HttpStatus } from '../../../core/types/http-statuses'
 import {
     Comment,
     CommentViewModel,
 } from '../../../comments/types/comment'
-import { usersRepository } from '../../../users/repository/users.repository'
-import { DomainError } from '../../../core/errors/domain.error'
-import { postsRepository } from '../../repository'
-import { HttpStatus } from '../../../core/types/http-statuses'
+import { postsService } from '../../../composition-root'
 
 export const createCommentHandler = async (
-    req: Request<{ id: string }>,
+    req: Request<{ postId: string }, {}, { content: string }, {}>,
     res: Response
 ) => {
     try {
-        const id = req.params.id
+        const postId = req.params.postId
         const { content } = req.body
 
         const userId = req.user!.id
 
         const comment: Comment = {
-            postId: id as string,
+            postId,
             content,
             userId,
             createdAt: new Date().toISOString(),
         }
 
-        const hasPost = await postsRepository.findById(id)
+        const hasPost = await postsService.findById(postId)
 
         if (!hasPost) {
             return res.status(404).send({ message: 'Post not found' })

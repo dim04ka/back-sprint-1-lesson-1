@@ -1,18 +1,21 @@
 import { WithId } from 'mongodb'
 import { PostQueryInput } from '../../posts/routes/input/post-query.input'
-import { commentsRepository } from '../repository/comment.repository'
+import { CommentsRepository } from '../repository/comment.repository'
 import { Comment } from '../types/comment'
 import { DomainError } from '../../core/errors/domain.error'
 
-export const commentsService = {
+export class CommentsService {
+    constructor(
+        private readonly commentsRepository: CommentsRepository
+    ) {}
     async updateComment(id: string, content: string): Promise<void> {
-        await commentsRepository.update(id, content)
-    },
+        await this.commentsRepository.update(id, content)
+    }
     async delete(id: string): Promise<void> {
-        await commentsRepository.delete(id)
-    },
+        await this.commentsRepository.delete(id)
+    }
     async findById(id: string): Promise<WithId<Comment>> {
-        const comment = await commentsRepository.findById(id)
+        const comment = await this.commentsRepository.findById(id)
         if (!comment) {
             throw new DomainError(
                 'Comment not found',
@@ -20,10 +23,10 @@ export const commentsService = {
             )
         }
         return comment
-    },
+    }
     async createComment(comment: Comment) {
-        return await commentsRepository.create(comment)
-    },
+        return await this.commentsRepository.create(comment)
+    }
     async getCommentsByPostId({
         postId,
         queryDto,
@@ -31,6 +34,9 @@ export const commentsService = {
         postId: string
         queryDto: PostQueryInput
     }) {
-        return await commentsRepository.findMany({ postId, queryDto })
-    },
+        return await this.commentsRepository.findMany({
+            postId,
+            queryDto,
+        })
+    }
 }

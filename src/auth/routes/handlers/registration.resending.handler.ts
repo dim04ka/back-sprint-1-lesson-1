@@ -1,11 +1,13 @@
 import { errorsHandler } from '../../../core/errors/errors.handler'
 import { Request, Response } from 'express'
-import { usersRepository } from '../../../users/repository/users.repository'
+import { usersRepository } from '../../../composition-root'
 import { HttpStatus } from '../../../core/types/http-statuses'
 import { add } from 'date-fns'
 import { randomUUID } from 'crypto'
 import { emailExamples } from '../../adapters/emailExamples'
 import { nodemailerService } from '../../adapters/nodemailer.service'
+import { WithId } from 'mongodb'
+import { User } from '../../../users/domain/user.entity'
 
 export const registrationEmailResendingHandler = async (
     req: Request<{}, {}, { email: string }>,
@@ -14,15 +16,17 @@ export const registrationEmailResendingHandler = async (
     try {
         const { email } = req.body
 
-        const user = await usersRepository.doesExistByEmail(email)
+        const user = (await usersRepository.doesExistByEmail(
+            email
+        )) as unknown as WithId<User>
         if (!user || user.emailConfirmation.isConfirmed) {
             return res.status(HttpStatus.BadRequest).send({
                 errorsMessages: [
                     {
                         field: 'email',
                         message: 'email not found or not confirmed',
-                    }
-                ]
+                    },
+                ],
             })
         }
 
@@ -31,8 +35,6 @@ export const registrationEmailResendingHandler = async (
         user.emailConfirmation.confirmationCode = newConfirmationCode
         user.emailConfirmation.expirationDate = newExpirationDate
         await usersRepository.update(user)
-
-     
 
         try {
             await nodemailerService.sendEmail(

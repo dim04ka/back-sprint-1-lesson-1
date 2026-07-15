@@ -1,86 +1,26 @@
-import { Collection, Db, MongoClient } from 'mongodb'
+import mongoose from 'mongoose'
 
 import dotenv from 'dotenv'
-import { Post } from '../../posts/dto'
-import { Blog } from '../../blogs/domain'
-import { IUserDB } from '../../users/types/user.db.interface'
-import type { Comment } from '../../comments/types/comment'
+
 dotenv.config()
 
-const POSTS_COLLECTION_NAME = 'posts'
-const BLOGS_COLLECTION_NAME = 'blogs'
-const USERS_COLLECTION_NAME = 'users'
-const COMMENTS_COLLECTION_NAME = 'comments'
-const REFRESH_TOKENS_COLLECTION_NAME = 'refreshTokens'
-const RACE_LIMITED_REQUESTS_COLLECTION_NAME = 'raceLimitedRequests'
-const SESSIONS_COLLECTION_NAME = 'sessions'
-
-export let client: MongoClient
-
-export let blogsCollection: Collection<Blog>
-export let postsCollection: Collection<Post>
-export let usersCollection: Collection<IUserDB>
-export let commentsCollection: Collection<Comment>
-export let refreshTokensCollection: Collection<{
-    userId: string
-    token: string
-}>
-
-export type RaceLimitedRequestsType = {
-    IP: string
-    URL: string
-    date: Date
-}
-export let raceLimitedRequestsCollection: Collection<RaceLimitedRequestsType>
-
-export type SessionsType = {
-    user_id: string
-    device_id: string
-    iat: Date
-    device_name: string
-    ip: string
-    exp: Date
-}
-export let sessionsCollection: Collection<SessionsType>
-// Подключения к бд
-export async function runDB(url: string): Promise<void> {
-    client = new MongoClient(url)
-    const db: Db = client.db(process.env.MONGO_DB_NAME || '')
-
-    // Инициализация коллекций
-    blogsCollection = db.collection<Blog>(BLOGS_COLLECTION_NAME)
-    postsCollection = db.collection<Post>(POSTS_COLLECTION_NAME)
-    usersCollection = db.collection<IUserDB>(USERS_COLLECTION_NAME)
-    commentsCollection = db.collection<Comment>(
-        COMMENTS_COLLECTION_NAME
-    )
-    refreshTokensCollection = db.collection<{
-        userId: string
-        token: string
-    }>(REFRESH_TOKENS_COLLECTION_NAME)
-
-    raceLimitedRequestsCollection =
-        db.collection<RaceLimitedRequestsType>(
-            RACE_LIMITED_REQUESTS_COLLECTION_NAME
-        )
-    sessionsCollection = db.collection<SessionsType>(
-        SESSIONS_COLLECTION_NAME
-    )
+const mongoUri = process.env.MONGO_CONNECT_URL || ''
+const mongoDbName = process.env.MONGO_DB_NAME || ''
+export async function runDB(): Promise<void> {
     try {
         console.log('Connecting to the database...')
-        await client.connect()
-        await db.command({ ping: 1 })
+        await mongoose.connect(mongoUri, { dbName: mongoDbName })
         console.log('✅ Connected to the database')
     } catch (e) {
-        await client.close()
+        mongoose.connection.close()
         throw new Error(`❌ Database not connected: ${e}`)
     }
 }
 
 // для тестов
 export async function stopDb() {
-    if (!client) {
+    if (!mongoose.connection.readyState) {
         throw new Error(`❌ No active client`)
     }
-    await client.close()
+    await mongoose.connection.close()
 }

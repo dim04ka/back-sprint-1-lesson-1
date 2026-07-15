@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { HttpStatus } from '../../../core/types/http-statuses'
 import { CreatePost } from '../../dto'
-import { postService } from '../../application/post.service'
+import { postsService } from '../../../composition-root'
 import { errorsHandler } from '../../../core/errors/errors.handler'
 
 export const updatePostHandler = async (
@@ -18,7 +18,7 @@ export const updatePostHandler = async (
             content,
             blogId,
         }
-        await postService.update({ id, post: updatedPost })
+        await postsService.update({ id, post: updatedPost })
         res.sendStatus(HttpStatus.NoContent)
     } catch (e: unknown) {
         errorsHandler(e, res)

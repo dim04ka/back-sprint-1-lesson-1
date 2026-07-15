@@ -3,9 +3,8 @@ import { Request, Response } from 'express'
 import { HttpStatus } from '../../../core/types/http-statuses'
 
 import { PostQueryInput } from '../input/post-query.input'
-import { matchedData } from 'express-validator'
-import { setDefaultSortAndPaginationIfNotExist } from '../../../core/helpers/set-default-sort-and-pagination'
-import { postService } from '../../application/post.service'
+
+import { postsService } from '../../../composition-root'
 
 import { mapToPostListPaginatedOutput } from '../mapper/map-to-post-list-paginated-output'
 import { errorsHandler } from '../../../core/errors/errors.handler'
@@ -15,14 +14,6 @@ export const getPostListHandler = async (
     res: Response
 ) => {
     try {
-        // const sanitizedQuery = matchedData<PostQueryInput>(req, {
-        //     locations: ['query'],
-        //     includeOptionals: true,
-        // })
-
-        // const queryInput =
-        //     setDefaultSortAndPaginationIfNotExist(sanitizedQuery)
-
         const queryInput = {
             pageNumber: Number(req.query.pageNumber) || 1,
             pageSize: Number(req.query.pageSize) || 10,
@@ -31,7 +22,7 @@ export const getPostListHandler = async (
         }
 
         const { items, totalCount } =
-            await postService.findManyWithBlogName(queryInput)
+            await postsService.findManyWithBlogName(queryInput)
 
         const responseItems = items.map((item) => ({
             id: item._id.toString(),

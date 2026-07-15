@@ -1,10 +1,11 @@
-import { postsCollection } from '../../db/mongo.db'
+import { PostModel } from '../../db/mongo.db/schemes'
 import { CreatePost, Post, PostViewModel } from '../dto'
 import { ObjectId, WithId } from 'mongodb'
+import type { PipelineStage } from 'mongoose'
 import { PostQueryInput } from '../routes/input/post-query.input'
 import { RepositoryNotFoundError } from '../../core/errors/repository-not-found.error'
 
-export const postsRepository = {
+export class PostsRepository {
     async findManyWithBlogName(
         queryDto: PostQueryInput & {
             postId?: string
@@ -31,7 +32,7 @@ export const postsRepository = {
             filter.blogId = queryDto.blogId
         }
 
-        const pipeline = [
+        const pipeline: PipelineStage[] = [
             {
                 $match: filter,
             },
@@ -83,9 +84,7 @@ export const postsRepository = {
             },
         ]
 
-        const result = await postsCollection
-            .aggregate(pipeline)
-            .toArray()
+        const result = await PostModel.aggregate(pipeline).exec()
 
         const items = result[0]?.items || []
         const totalCount = result[0]?.totalCount[0]?.count || 0
@@ -97,34 +96,34 @@ export const postsRepository = {
             })),
             totalCount,
         }
-    },
+    }
     async findById(id: string): Promise<WithId<Post>> {
-        const res = await postsCollection.findOne({
+        const res = await PostModel.findOne({
             _id: new ObjectId(id),
         })
         if (!res) {
             throw new RepositoryNotFoundError('Post not exist')
         }
         return res
-    },
+    }
     async create(
         post: CreatePost & { createdAt: string }
     ): Promise<{ id: string }> {
-        const result = await postsCollection.insertOne(
+        const result = await PostModel.create(
             post as PostViewModel
         )
 
-        return { id: result.insertedId.toString() }
-    },
+        return { id: result._id.toString() }
+    }
     async delete(id: string): Promise<void> {
-        const result = await postsCollection.deleteOne({
+        const result = await PostModel.deleteOne({
             _id: new ObjectId(id),
         })
         if (result.deletedCount === 0) {
             throw new RepositoryNotFoundError('Post not found')
         }
         return
-    },
+    }
     async update({
         id,
         post,
@@ -132,12 +131,12 @@ export const postsRepository = {
         id: string
         post: CreatePost
     }): Promise<void> {
-        const result = await postsCollection.updateOne(
+        const result = await PostModel.updateOne(
             { _id: new ObjectId(id) },
             { $set: post }
         )
         if (result.matchedCount === 0) {
             throw new RepositoryNotFoundError('Post not found')
         }
-    },
+    }
 }

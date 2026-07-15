@@ -4,12 +4,11 @@ import request from 'supertest'
 import { ADMIN_PASSWORD, ADMIN_USERNAME } from '../../../src/const'
 import { HttpStatus } from '../../../src/core/types/http-statuses'
 import { ROUTES } from '../../../src/core/path'
+import { runDB, stopDb } from '../../../src/db/mongo.db'
 import {
-    runDB,
-    raceLimitedRequestsCollection,
-    sessionsCollection,
-    stopDb,
-} from '../../../src/db/mongo.db'
+    RaceLimitedRequestsModel,
+    SessionModel,
+} from '../../../src/db/mongo.db/schemes'
 import { setupApp } from '../../../src/setup-app'
 
 const testUser = {
@@ -45,7 +44,7 @@ describe('Login API', () => {
     setupApp(app)
 
     beforeAll(async () => {
-        await runDB(process.env.MONGO_CONNECT_URL || '')
+        await runDB()
 
         await request(app)
             .delete(`${ROUTES.TESTING}/all-data`)
@@ -143,8 +142,8 @@ describe('Login API', () => {
     })
 
     it('should keep current session after deleting all other sessions', async () => {
-        await raceLimitedRequestsCollection.deleteMany({})
-        await sessionsCollection.deleteMany({})
+        await RaceLimitedRequestsModel.deleteMany({})
+        await SessionModel.deleteMany({})
 
         const sessionTestUser = {
             login: 'sess-user',
@@ -238,7 +237,7 @@ describe('Login API', () => {
     })
 
     it('should manage security devices lifecycle with refresh token', async () => {
-        await sessionsCollection.deleteMany({})
+        await SessionModel.deleteMany({})
 
         const devicesTestUser = {
             login: 'devices01',

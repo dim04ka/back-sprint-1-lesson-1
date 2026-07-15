@@ -1,7 +1,8 @@
 import { Request, Response } from 'express'
 import { Blog, BlogViewModel } from '../../domain'
 import { HttpStatus } from '../../../core/types/http-statuses'
-import { blogsService } from '../../application/blogs.service'
+import { blogsService } from '../../../composition-root'
+import { errorsHandler } from '../../../core/errors/errors.handler'
 
 export const createBlogHandler = async (
     req: Request,
@@ -20,15 +21,19 @@ export const createBlogHandler = async (
         ...additionalBlogData,
     }
 
-    const { id } = await blogsService.create(newBlog)
+    try {
+        const { id } = await blogsService.create(newBlog)
 
-    const responseBlog: BlogViewModel = {
-        id,
-        name,
-        description,
-        websiteUrl,
-        ...additionalBlogData,
+        const responseBlog: BlogViewModel = {
+            id,
+            name,
+            description,
+            websiteUrl,
+            ...additionalBlogData,
+        }
+
+        res.status(HttpStatus.Created).send(responseBlog)
+    } catch (e: unknown) {
+        errorsHandler(e, res)
     }
-
-    res.status(HttpStatus.Created).send(responseBlog)
 }

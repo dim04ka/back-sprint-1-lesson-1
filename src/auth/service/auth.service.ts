@@ -1,8 +1,8 @@
-import { usersRepository } from '../../users/repository/users.repository'
+import { usersRepository } from '../../composition-root'
 import { bcryptService } from '../adapters/bcrypt.service'
 import { jwtService } from '../adapters/jwt.service'
 
-export const authService = {
+export class AuthService {
     async login({
         loginOrEmail,
         password,
@@ -24,12 +24,15 @@ export const authService = {
             return null
         }
         const { accessToken, refreshToken } =
-            await jwtService.createToken(user._id.toString(), deviceId)
+            await jwtService.createToken(
+                user._id.toString(),
+                deviceId
+            )
 
         return {
             accessToken,
             refreshToken,
             user_id: user._id.toString(),
         }
-    },
+    }
 }

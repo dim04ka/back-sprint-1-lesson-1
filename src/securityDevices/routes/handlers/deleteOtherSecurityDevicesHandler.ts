@@ -3,7 +3,7 @@ import { Request, Response } from 'express'
 import { jwtService } from '../../../auth/adapters/jwt.service'
 import { errorsHandler } from '../../../core/errors/errors.handler'
 import { HttpStatus } from '../../../core/types/http-statuses'
-import { securityDevicesService } from '../../services/securityDevices.service'
+import { securityDevicesService } from '../../../composition-root'
 
 export const deleteOtherSecurityDevicesHandler = async (
     req: Request,

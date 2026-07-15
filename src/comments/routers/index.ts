@@ -1,14 +1,21 @@
 import { Router } from 'express'
 import { NextFunction, Request, Response } from 'express'
-import { commentsService } from '../service/comment.service'
-import { usersRepository } from '../../users/repository/users.repository'
+import { commentsService } from '../../composition-root'
+
 import { accessTokenGuard } from '../../auth/routes/guard/access.token.guard'
+
 import {
     commentContentValidation,
     commentIdValidation,
+    commentLikeStatusValidation,
 } from '../validation/comment.validation'
 import { inputValidationResultMiddleware } from '../../core/middlewares/validation'
-
+import {
+    commentsGetHandler,
+    commentsDeleteHandler,
+    commentUpdateHandler,
+    commentLikeStatusHandler,
+} from './handlers'
 export const commentsRouter = Router()
 
 const commentExistenceGuard = async (
@@ -25,28 +32,7 @@ const commentExistenceGuard = async (
     }
 }
 
-commentsRouter.get('/:id', async (req: Request<{ id: string }>, res: Response) => {
-    try {
-        const id = req.params.id
-
-        const comment = await commentsService.findById(id)
-        const user = await usersRepository.findById(comment!.userId)
-
-        const commentOutput = {
-            id: comment._id.toString(),
-            content: comment.content,
-            commentatorInfo: {
-                userId: comment.userId,
-                userLogin: user?.login ?? '',
-            },
-            createdAt: comment.createdAt,
-        }
-
-        res.status(200).send(commentOutput)
-    } catch (error) {
-        res.status(404).send({ message: 'Comment not found' })
-    }
-})
+commentsRouter.get('/:id', commentsGetHandler)
 
 commentsRouter.delete(
     '/:id',
@@ -54,19 +40,7 @@ commentsRouter.delete(
     commentIdValidation,
     inputValidationResultMiddleware,
     commentExistenceGuard,
-    async (req: Request<{ id: string }>, res: Response) => {
-        const userId = req.user!.id
-        const comment = res.locals.comment as Awaited<
-            ReturnType<typeof commentsService.findById>
-        >
-
-        if (comment.userId !== userId) {
-            return res.status(403).send({ message: 'Forbidden' })
-        }
-
-        await commentsService.delete(req.params.id)
-        res.sendStatus(204)
-    }
+    commentsDeleteHandler
 )
 
 commentsRouter.put(
@@ -76,19 +50,15 @@ commentsRouter.put(
     inputValidationResultMiddleware,
     commentExistenceGuard,
     commentContentValidation,
+
+    commentUpdateHandler
+)
+
+commentsRouter.put(
+    '/:id/like-status',
+    accessTokenGuard,
+    commentLikeStatusValidation,
     inputValidationResultMiddleware,
-    async (req: Request<{ id: string }>, res: Response) => {
-        const { content } = req.body
-        const userId = req.user!.id
-        const comment = res.locals.comment as Awaited<
-            ReturnType<typeof commentsService.findById>
-        >
-
-        if (comment.userId !== userId) {
-            return res.status(403).send({ message: 'Forbidden' })
-        }
-
-        await commentsService.updateComment(req.params.id, content)
-        res.sendStatus(204)
-    }
+    commentExistenceGuard,
+    commentLikeStatusHandler
 )

@@ -1,6 +1,6 @@
 import { NextFunction } from 'express'
 import { Request, Response } from 'express'
-import { raceLimitedRequestsCollection } from '../../../db/mongo.db'
+import { RaceLimitedRequestsModel } from '../../../db/mongo.db/schemes'
 import { errorsHandler } from '../../errors/errors.handler'
 import { HttpStatus } from '../../types/http-statuses'
 
@@ -20,14 +20,14 @@ export const limitedRequestMiddleware =
                 return res.sendStatus(HttpStatus.BadRequest)
             }
 
-            await raceLimitedRequestsCollection.insertOne({
+            await RaceLimitedRequestsModel.insertOne({
                 IP: ip,
                 URL: originalUrl,
                 date: new Date(),
             })
 
             const sessionCount =
-                await raceLimitedRequestsCollection.countDocuments({
+                await RaceLimitedRequestsModel.countDocuments({
                     IP: ip,
                     URL: originalUrl,
                     date: { $gte: new Date(Date.now() - timeWindow) },

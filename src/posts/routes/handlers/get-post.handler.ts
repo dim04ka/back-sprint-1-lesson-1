@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { HttpStatus } from '../../../core/types/http-statuses'
 
-import { postService } from '../../application/post.service'
+import { postsService } from '../../../composition-root'
 import { PostSortFields } from '../input/post-sort.input'
 import { SortDirection } from '../../../core/types/sort-direction'
 import { errorsHandler } from '../../../core/errors/errors.handler'
@@ -9,7 +9,7 @@ import { errorsHandler } from '../../../core/errors/errors.handler'
 export const getPostHandler = async (req: Request, res: Response) => {
     try {
         const id = req.params.id
-        const { items } = await postService.findManyWithBlogName({
+        const { items } = await postsService.findManyWithBlogName({
             postId: id as string,
             pageNumber: 1,
             pageSize: 10,

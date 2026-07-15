@@ -3,9 +3,7 @@ import {
     idValidation,
     blogIdValidation,
     inputValidationResultMiddleware,
-    paginationAndSortingValidation,
 } from '../../core/middlewares/validation'
-import { BlogSortFields } from './input/blog-sort.input'
 
 import { createBlogValidationMiddleware } from './input/blog-create.input-dto.validation-middlewares'
 import { createBlogPostValidationMiddleware } from './input/blog-post.input-dto.validation-middleware'
@@ -20,15 +18,11 @@ import {
     createBlogPostHandler,
     getBlogPostListHandler,
 } from './handlers'
-import { searchNameTermValidation } from './input/blog-query.validation-middleware'
-import { PostSortFields } from '../../posts/routes/input/post-sort.input'
 
 export const blogsRouter = Router()
 
 blogsRouter.get(
     '',
-    // searchNameTermValidation,
-    // paginationAndSortingValidation(BlogSortFields),
     inputValidationResultMiddleware,
     getBlogListHandler
 )
@@ -52,7 +46,6 @@ blogsRouter.post(
 blogsRouter.get(
     '/:blogId/posts',
     blogIdValidation,
-    // paginationAndSortingValidation(PostSortFields),
     inputValidationResultMiddleware,
     getBlogPostListHandler
 )

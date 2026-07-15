@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from 'express'
 import {
     idValidation,
     inputValidationResultMiddleware,
+    postIdValidation,
 } from '../../core/middlewares/validation'
 
 import { createPostValidationMiddleware } from './validate'
@@ -17,25 +18,10 @@ import {
     getCommentsByPostIdHandler,
 } from './handlers'
 
-import { paginationAndSortingValidation } from '../../core/middlewares/validation'
-import { PostSortFields } from './input/post-sort.input'
 import { accessTokenGuard } from '../../auth/routes/guard/access.token.guard'
 import { commentContentValidation } from '../../comments/validation/comment.validation'
-import { postsRepository } from '../repository'
+import { postsService } from '../../composition-root'
 export const postsRouter = Router()
-
-const postByIdExistenceGuard = async (
-    req: Request<{ id: string }>,
-    res: Response,
-    next: NextFunction
-) => {
-    try {
-        await postsRepository.findById(req.params.id)
-        next()
-    } catch (error) {
-        res.status(404).send({ message: 'Post not found' })
-    }
-}
 
 const postByPostIdExistenceGuard = async (
     req: Request<{ postId: string }>,
@@ -43,7 +29,7 @@ const postByPostIdExistenceGuard = async (
     next: NextFunction
 ) => {
     try {
-        await postsRepository.findById(req.params.postId)
+        await postsService.findById(req.params.postId)
         next()
     } catch (error) {
         res.status(404).send({ message: 'Post not found' })
@@ -52,7 +38,6 @@ const postByPostIdExistenceGuard = async (
 
 postsRouter.get(
     '',
-    // paginationAndSortingValidation(PostSortFields),
     inputValidationResultMiddleware,
     getPostListHandler
 )
@@ -86,11 +71,11 @@ postsRouter.delete(
 )
 
 postsRouter.post(
-    '/:id/comments',
+    '/:postId/comments',
     accessTokenGuard,
-    idValidation,
+    postIdValidation,
     inputValidationResultMiddleware,
-    postByIdExistenceGuard,
+    postByPostIdExistenceGuard,
     commentContentValidation,
     inputValidationResultMiddleware,
     createCommentHandler

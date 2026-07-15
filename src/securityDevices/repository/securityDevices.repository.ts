@@ -1,47 +1,49 @@
-import { sessionsCollection } from '../../db/mongo.db'
+import { SessionModel } from '../../db/mongo.db/schemes'
 
-export const securityDevicesRepository = {
-    getSecurityDevices: async (userId: string) => {
-        const securityDevices = await sessionsCollection
-            .find({ user_id: userId })
-            .toArray()
+export class SecurityDevicesRepository {
+    constructor() {}
+    async getSecurityDevices(userId: string) {
+        const securityDevices = await SessionModel.find({
+            user_id: userId,
+        }).exec()
         return securityDevices
-    },
-    deleteOtherSecurityDevices: async (
+    }
+
+    async deleteOtherSecurityDevices(
         userId: string,
         currentDeviceId: string
-    ) => {
-        await sessionsCollection.deleteMany({
+    ) {
+        await SessionModel.deleteMany({
             user_id: userId,
             device_id: { $ne: currentDeviceId },
         })
-    },
-    findSecurityDeviceByDeviceId: async (deviceId: string) => {
-        const securityDevice = await sessionsCollection.findOne({
+    }
+    async findSecurityDeviceByDeviceId(deviceId: string) {
+        const securityDevice = await SessionModel.findOne({
             device_id: deviceId,
         })
         return securityDevice
-    },
-    deleteSecurityDeviceByDeviceId: async (deviceId: string) => {
-        await sessionsCollection.deleteOne({
+    }
+    async deleteSecurityDeviceByDeviceId(deviceId: string) {
+        await SessionModel.deleteOne({
             device_id: deviceId,
         })
-    },
-    deleteSecurityDeviceByDeviceIdAndIat: async ({
+    }
+    async deleteSecurityDeviceByDeviceIdAndIat({
         deviceId,
         iat,
     }: {
         deviceId: string
         iat: Date
-    }): Promise<boolean> => {
-        const result = await sessionsCollection.deleteOne({
+    }): Promise<boolean> {
+        const result = await SessionModel.deleteOne({
             device_id: deviceId,
             iat,
         })
 
         return result.deletedCount === 1
-    },
-    updateSecurityDeviceIat: async ({
+    }
+    async updateSecurityDeviceIat({
         deviceId,
         currentIat,
         newIat,
@@ -51,8 +53,8 @@ export const securityDevicesRepository = {
         currentIat: Date
         newIat: Date
         exp: Date
-    }): Promise<boolean> => {
-        const result = await sessionsCollection.updateOne(
+    }): Promise<boolean> {
+        const result = await SessionModel.updateOne(
             {
                 device_id: deviceId,
                 iat: currentIat,
@@ -66,5 +68,5 @@ export const securityDevicesRepository = {
         )
 
         return result.matchedCount === 1
-    },
+    }
 }

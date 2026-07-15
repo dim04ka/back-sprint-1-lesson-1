@@ -1,13 +1,12 @@
 import { Request, Response } from 'express'
 import { LoginDto } from '../../../types/login.dto'
-import { authService } from '../../../service/auth.service'
+
 import { HttpStatus } from '../../../../core/types/http-statuses'
 import { errorsHandler } from '../../../../core/errors/errors.handler'
-import { sessionsCollection } from '../../../../db/mongo.db'
+import { SessionModel } from '../../../../db/mongo.db/schemes'
 import { jwtService } from '../../../adapters/jwt.service'
 import { randomUUID } from 'crypto'
-
-// import { appConfig } from '../../../common/config/config'
+import { authService } from '../../../../composition-root'
 
 export const loginHandler = async (
     req: Request<{}, {}, LoginDto>,
@@ -46,7 +45,7 @@ export const loginHandler = async (
         }
         const { iat, exp } = decodedRefreshToken
 
-        await sessionsCollection.insertOne({
+        await SessionModel.create({
             user_id,
             device_id: deviceId,
             iat: new Date(iat * 1000),

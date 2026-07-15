@@ -1,15 +1,19 @@
 import { Request, Response } from 'express'
-import { usersRepository } from '../../../../users/repository/users.repository'
+
 import { HttpStatus } from '../../../../core/types/http-statuses'
 import { bcryptService } from '../../../adapters/bcrypt.service'
+import { usersRepository } from '../../../../composition-root'
+import { WithId } from 'mongodb'
+import { User } from '../../../../users/domain/user.entity'
 
 export const newPasswordHandler = async (
     req: Request,
     res: Response
 ) => {
     const { newPassword, recoveryCode } = req.body
-    const user =
-        await usersRepository.findByConfirmationCode(recoveryCode)
+    const user = (await usersRepository.findByConfirmationCode(
+        recoveryCode
+    )) as unknown as WithId<User>
     if (!user) {
         return res.status(HttpStatus.BadRequest).send({
             errorsMessages: [

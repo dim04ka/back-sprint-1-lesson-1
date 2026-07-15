@@ -1,4 +1,4 @@
-import { securityDevicesRepository } from '../repository/securityDevices.repository'
+import { SecurityDevicesRepository } from '../repository/securityDevices.repository'
 
 type DeleteSecurityDeviceResult = 'success' | 'notFound' | 'forbidden'
 
@@ -20,17 +20,22 @@ type ValidateRefreshSessionParams = {
     iat: Date
 }
 
-class SecurityDevicesService {
+export class SecurityDevicesService {
+    constructor(
+        private readonly securityDevicesRepository: SecurityDevicesRepository
+    ) {}
     async getSecurityDevices(userId: string) {
         const securityDevices =
-            await securityDevicesRepository.getSecurityDevices(userId)
+            await this.securityDevicesRepository.getSecurityDevices(
+                userId
+            )
         return securityDevices
     }
     async deleteOtherSecurityDevices(
         userId: string,
         currentDeviceId: string
     ): Promise<void> {
-        await securityDevicesRepository.deleteOtherSecurityDevices(
+        await this.securityDevicesRepository.deleteOtherSecurityDevices(
             userId,
             currentDeviceId
         )
@@ -40,7 +45,7 @@ class SecurityDevicesService {
         deviceId: string
     ): Promise<DeleteSecurityDeviceResult> {
         const securityDevice =
-            await securityDevicesRepository.findSecurityDeviceByDeviceId(
+            await this.securityDevicesRepository.findSecurityDeviceByDeviceId(
                 deviceId
             )
 
@@ -52,7 +57,7 @@ class SecurityDevicesService {
             return 'forbidden'
         }
 
-        await securityDevicesRepository.deleteSecurityDeviceByDeviceId(
+        await this.securityDevicesRepository.deleteSecurityDeviceByDeviceId(
             deviceId
         )
 
@@ -62,7 +67,9 @@ class SecurityDevicesService {
     async updateSecurityDeviceIat(
         params: UpdateSecurityDeviceIatParams
     ): Promise<boolean> {
-        return securityDevicesRepository.updateSecurityDeviceIat(params)
+        return this.securityDevicesRepository.updateSecurityDeviceIat(
+            params
+        )
     }
 
     async validateRefreshSession({
@@ -71,7 +78,7 @@ class SecurityDevicesService {
         iat,
     }: ValidateRefreshSessionParams): Promise<boolean> {
         const securityDevice =
-            await securityDevicesRepository.findSecurityDeviceByDeviceId(
+            await this.securityDevicesRepository.findSecurityDeviceByDeviceId(
                 deviceId
             )
 
@@ -88,10 +95,8 @@ class SecurityDevicesService {
     async deleteSecurityDeviceByDeviceIdAndIat(
         params: DeleteSecurityDeviceByDeviceIdAndIatParams
     ): Promise<boolean> {
-        return securityDevicesRepository.deleteSecurityDeviceByDeviceIdAndIat(
+        return this.securityDevicesRepository.deleteSecurityDeviceByDeviceIdAndIat(
             params
         )
     }
 }
-
-export const securityDevicesService = new SecurityDevicesService()

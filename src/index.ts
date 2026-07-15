@@ -18,7 +18,7 @@ const bootstrap = async (): Promise<Express> => {
 
     setupApp(app)
 
-    await runDB(process.env.MONGO_CONNECT_URL || '')
+    await runDB()
 
     isInitialized = true
 

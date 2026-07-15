@@ -2,10 +2,11 @@ import { IUserView } from '../types/user.view.interface'
 import { ObjectId, WithId } from 'mongodb'
 import { IUserDB } from '../types/user.db.interface'
 import { SortQueryFilterType } from '../../core/types/sortQueryFilter.type'
-import { usersCollection } from '../../db/mongo.db'
+import { UserModel } from '../../db/mongo.db/schemes/users'
 import { IPagination } from '../../core/types/pagination'
 
-export const usersQwRepository = {
+export class UsersQueryRepository {
+    constructor() {}
     async findAllUsers(
         sortQueryDto: SortQueryFilterType & {
             searchLoginTerm?: string
@@ -52,30 +53,30 @@ export const usersQwRepository = {
             }
         }
 
-        const totalCount =
-            await usersCollection.countDocuments(filter)
+        const totalCount = await UserModel.countDocuments(filter)
 
-        const users = await usersCollection
-            .find(filter)
+        const users = await UserModel.find(filter)
             .sort({ [sortBy]: sortDirection })
             .skip((pageNumber - 1) * pageSize)
             .limit(pageSize)
-            .toArray()
+            .lean()
 
         return {
             pagesCount: Math.ceil(totalCount / pageSize),
             page: pageNumber,
             pageSize: pageSize,
             totalCount,
-            items: users.map((u) => this._getInView(u)),
+            items: users.map((u) =>
+                this._getInView(u as unknown as WithId<IUserDB>)
+            ),
         }
-    },
+    }
     async findById(id: string): Promise<IUserView | null> {
-        const user = await usersCollection.findOne({
+        const user = (await UserModel.findOne({
             _id: new ObjectId(id),
-        })
+        }).lean()) as WithId<IUserDB> | null
         return user ? this._getInView(user) : null
-    },
+    }
     _getInView(user: WithId<IUserDB>): IUserView {
         return {
             id: user._id.toString(),
@@ -83,8 +84,5 @@ export const usersQwRepository = {
             email: user.email,
             createdAt: user.createdAt.toISOString(),
         }
-    },
-    _checkObjectId(id: string): boolean {
-        return ObjectId.isValid(id)
-    },
+    }
 }

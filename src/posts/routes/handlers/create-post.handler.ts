@@ -2,8 +2,7 @@ import { Request, Response } from 'express'
 import { CreatePost, PostViewModel } from '../../dto'
 
 import { HttpStatus } from '../../../core/types/http-statuses'
-import { blogsService } from '../../../blogs/application/blogs.service'
-import { postService } from '../../application/post.service'
+import { blogsService, postsService } from '../../../composition-root'
 import { errorsHandler } from '../../../core/errors/errors.handler'
 
 export const createPostHandler = async (
@@ -24,7 +23,7 @@ export const createPostHandler = async (
             createdAt,
         }
 
-        const { id } = await postService.create(newPost)
+        const { id } = await postsService.create(newPost)
 
         const postWithInfo: PostViewModel = {
             id,

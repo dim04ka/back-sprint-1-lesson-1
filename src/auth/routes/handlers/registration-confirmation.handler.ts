@@ -1,7 +1,9 @@
 import { errorsHandler } from '../../../core/errors/errors.handler'
 import { Request, Response } from 'express'
-import { usersRepository } from '../../../users/repository/users.repository'
+import { usersRepository } from '../../../composition-root'
 import { HttpStatus } from '../../../core/types/http-statuses'
+import { WithId } from 'mongodb'
+import { User } from '../../../users/domain/user.entity'
 
 export const registrationConfirmationHandler = async (
     req: Request,
@@ -10,8 +12,9 @@ export const registrationConfirmationHandler = async (
     try {
         const { code } = req.body
 
-        const user =
-            await usersRepository.findByConfirmationCode(code)
+        const user = (await usersRepository.findByConfirmationCode(
+            code
+        )) as unknown as WithId<User>
         if (
             !user ||
             user.emailConfirmation.isConfirmed ||
@@ -22,8 +25,8 @@ export const registrationConfirmationHandler = async (
                     {
                         field: 'code',
                         message: 'code not found or expired',
-                    }
-                ]
+                    },
+                ],
             })
         }
 

@@ -2,7 +2,7 @@ import { HttpStatus } from '../../../../core/types/http-statuses'
 import { Request, Response } from 'express'
 import { errorsHandler } from '../../../../core/errors/errors.handler'
 import { jwtService } from '../../../adapters/jwt.service'
-import { securityDevicesService } from '../../../../securityDevices/services/securityDevices.service'
+import { securityDevicesService } from '../../../../composition-root'
 
 const getJwtDate = (seconds: number): Date => new Date(seconds * 1000)
 
@@ -20,10 +20,12 @@ export const logoutHandler = async (req: Request, res: Response) => {
         }
 
         const isSecurityDeviceDeleted =
-            await securityDevicesService.deleteSecurityDeviceByDeviceIdAndIat({
-                deviceId: payload.deviceId,
-                iat: getJwtDate(payload.iat),
-            })
+            await securityDevicesService.deleteSecurityDeviceByDeviceIdAndIat(
+                {
+                    deviceId: payload.deviceId,
+                    iat: getJwtDate(payload.iat),
+                }
+            )
         if (!isSecurityDeviceDeleted) {
             return res.sendStatus(HttpStatus.Unauthorized)
         }

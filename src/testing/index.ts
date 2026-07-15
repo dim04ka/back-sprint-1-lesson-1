@@ -1,31 +1,33 @@
 import { Router } from 'express'
 
 import { Request, Response } from 'express'
-import {
-    blogsCollection,
-    commentsCollection,
-    usersCollection,
-    refreshTokensCollection,
-    raceLimitedRequestsCollection,
-    sessionsCollection,
-} from '../db/mongo.db'
-import { postsCollection } from '../db/mongo.db'
+
 import { HttpStatus } from '../core/types/http-statuses'
+import {
+    BlogModel,
+    UserModel,
+    CommentModel,
+    PostModel,
+    SessionModel,
+    RaceLimitedRequestsModel,
+} from '../db/mongo.db/schemes'
 
 export const testingRouter = Router()
 
 testingRouter.delete(
     '/all-data',
     async (_: Request, res: Response) => {
+        console.log('Deleting all data...')
+
         await Promise.all([
-            blogsCollection.deleteMany(),
-            postsCollection.deleteMany(),
-            usersCollection.deleteMany(),
-            commentsCollection.deleteMany(),
-            refreshTokensCollection.deleteMany(),
-            raceLimitedRequestsCollection.deleteMany(),
-            sessionsCollection.deleteMany(),
+            // BlogModel.deleteMany({}),
+            // PostModel.deleteMany(),
+            UserModel.deleteMany(),
+            // CommentModel.deleteMany(),
+            // RaceLimitedRequestsModel.deleteMany(),
+            // SessionModel.deleteMany(),
         ])
+        debugger
         res.sendStatus(HttpStatus.NoContent)
     }
 )

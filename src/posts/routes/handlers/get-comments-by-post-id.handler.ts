@@ -1,4 +1,4 @@
-import { commentsService } from '../../../comments/service/comment.service'
+import { commentsService } from '../../../composition-root'
 import { HttpStatus } from '../../../core/types/http-statuses'
 import { SortDirection } from '../../../core/types/sort-direction'
 import { Request, Response } from 'express'
@@ -15,9 +15,11 @@ export const getCommentsByPostIdHandler = async (
         const queryInput: PostQueryInput = {
             pageNumber: Number(req.query.pageNumber) || 1,
             pageSize: Number(req.query.pageSize) || 10,
-            sortBy: (req.query.sortBy as PostSortFields) ??
+            sortBy:
+                (req.query.sortBy as PostSortFields) ??
                 PostSortFields.CreatedAt,
-            sortDirection: (req.query.sortDirection as SortDirection) ??
+            sortDirection:
+                (req.query.sortDirection as SortDirection) ??
                 SortDirection.Desc,
         }
 

@@ -1,12 +1,13 @@
-import { postsRepository } from '../repository'
+import { PostsRepository } from '../repository'
 import { CreatePost, Post, PostViewModel } from '../dto'
 import { PostQueryInput } from '../routes/input/post-query.input'
 import { WithId } from 'mongodb'
 
-export const postService = {
+export class PostsService {
+    constructor(private readonly postsRepository: PostsRepository) {}
     async findById(id: string): Promise<WithId<Post>> {
-        return postsRepository.findById(id)
-    },
+        return this.postsRepository.findById(id)
+    }
     async findManyWithBlogName(
         queryDto: PostQueryInput & {
             postId?: string
@@ -16,17 +17,17 @@ export const postService = {
         items: WithId<PostViewModel>[]
         totalCount: number
     }> {
-        return postsRepository.findManyWithBlogName(queryDto)
-    },
+        return this.postsRepository.findManyWithBlogName(queryDto)
+    }
     async create(
         post: CreatePost & { createdAt: string }
     ): Promise<{ id: string }> {
-        return await postsRepository.create(post)
-    },
+        return await this.postsRepository.create(post)
+    }
     async delete(id: string): Promise<void> {
-        await postsRepository.delete(id)
+        await this.postsRepository.delete(id)
         return
-    },
+    }
     async update({
         id,
         post,
@@ -34,7 +35,7 @@ export const postService = {
         id: string
         post: CreatePost
     }): Promise<void> {
-        await postsRepository.update({ id, post })
+        await this.postsRepository.update({ id, post })
         return
-    },
+    }
 }
