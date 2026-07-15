@@ -2,7 +2,11 @@ import { commentsService } from '../../../composition-root'
 import { Request, Response } from 'express'
 
 export const commentLikeStatusHandler = async (
-    req: Request<{ id: string }>,
+    req: Request<
+        { id: string },
+        {},
+        { likeStatus: 'Like' | 'Dislike' | 'None' }
+    >,
     res: Response
 ) => {
     const { id } = req.params
@@ -14,9 +18,12 @@ export const commentLikeStatusHandler = async (
     if (comment.userId !== userId) {
         return res.status(403).send({ message: 'Forbidden' })
     }
-    // await commentsService.updateCommentLikeStatus(
-    //     commentId,
-    //     likeStatus
-    // )
+    try {
+        await commentsService.createLikeStatus(id, userId, likeStatus)
+        res.sendStatus(204)
+    } catch (error) {
+        return res.status(400).send({ message: 'Bad Request' })
+    }
+
     res.sendStatus(204)
 }

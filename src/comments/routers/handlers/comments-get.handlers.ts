@@ -14,6 +14,16 @@ export const commentsGetHandler = async (
 
         const comment = await commentsService.findById(id)
         const user = await usersRepository.findById(comment!.userId)
+        const likes = await commentsService.findLikesByCommentId(id)
+        const likesCount = likes.filter(
+            (like) => like.status === 'Like'
+        ).length
+        const dislikesCount = likes.filter(
+            (like) => like.status === 'Dislike'
+        ).length
+        const myStatus =
+            likes.find((like) => like.userId === user?.id)?.status ??
+            'None'
 
         const commentOutput = {
             id: comment._id.toString(),
@@ -23,6 +33,11 @@ export const commentsGetHandler = async (
                 userLogin: user?.login ?? '',
             },
             createdAt: comment.createdAt,
+            likesInfo: {
+                likesCount: likesCount,
+                dislikesCount: dislikesCount,
+                myStatus: myStatus,
+            },
         }
 
         res.status(200).send(commentOutput)

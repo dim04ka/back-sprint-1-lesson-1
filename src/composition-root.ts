@@ -17,6 +17,7 @@ import { PostsRepository } from './posts/repository'
 import { PostsService } from './posts/application/post.service'
 import { SecurityDevicesRepository } from './securityDevices/repository/securityDevices.repository'
 import { SecurityDevicesService } from './securityDevices/services/securityDevices.service'
+import { LikeRepository } from './comments/repository/like.repository'
 
 // -------------- Users --------------
 
@@ -34,7 +35,11 @@ export const usersService = new UsersService(
 
 // -------------- Comments --------------
 export const commentsRepository = new CommentsRepository()
-export const commentsService = new CommentsService(commentsRepository)
+export const likeRepository = new LikeRepository()
+export const commentsService = new CommentsService(
+    commentsRepository,
+    likeRepository
+)
 
 // -------------- Blogs --------------
 export const blogsRepository = new BlogsRepository()

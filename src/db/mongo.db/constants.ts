@@ -7,3 +7,5 @@ export const REFRESH_TOKENS_COLLECTION_NAME = 'refreshTokens'
 export const RACE_LIMITED_REQUESTS_COLLECTION_NAME =
     'raceLimitedRequests'
 export const SESSIONS_COLLECTION_NAME = 'sessions'
+
+export const LIKES_COLLECTION_NAME = 'likes'
