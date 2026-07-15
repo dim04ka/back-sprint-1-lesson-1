@@ -52,6 +52,11 @@ export const createCommentHandler = async (
                 userId,
                 userLogin: user.login,
             },
+            likesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: 'None',
+            },
         }
         res.status(HttpStatus.Created).send(responseComment)
     } catch (error) {

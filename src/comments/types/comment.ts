@@ -15,4 +15,9 @@ export type CommentViewModel = {
         userLogin: string
     }
     createdAt: string
+    likesInfo: {
+        likesCount: number
+        dislikesCount: number
+        myStatus: 'Like' | 'Dislike' | 'None'
+    }
 }
