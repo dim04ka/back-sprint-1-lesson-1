@@ -20,12 +20,12 @@ testingRouter.delete(
         console.log('Deleting all data...')
 
         await Promise.all([
-            // BlogModel.deleteMany({}),
-            // PostModel.deleteMany(),
+            BlogModel.deleteMany({}),
+            PostModel.deleteMany(),
             UserModel.deleteMany(),
-            // CommentModel.deleteMany(),
-            // RaceLimitedRequestsModel.deleteMany(),
-            // SessionModel.deleteMany(),
+            CommentModel.deleteMany(),
+            RaceLimitedRequestsModel.deleteMany(),
+            SessionModel.deleteMany(),
         ])
         debugger
         res.sendStatus(HttpStatus.NoContent)
