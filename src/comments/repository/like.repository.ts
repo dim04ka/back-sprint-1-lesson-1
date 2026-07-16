@@ -12,7 +12,7 @@ export class LikeRepository {
     }
 
     async findLikesByCommentId(commentId: string) {
-        return await LikeModel.find({ id: commentId }).lean()
+        return await LikeModel.find({ commentId }).lean()
     }
 
     async createLikeStatus(
