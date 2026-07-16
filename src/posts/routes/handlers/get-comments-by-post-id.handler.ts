@@ -4,6 +4,7 @@ import { SortDirection } from '../../../core/types/sort-direction'
 import { Request, Response } from 'express'
 import { PostQueryInput } from '../input/post-query.input'
 import { PostSortFields } from '../input/post-sort.input'
+import { getUserIdFromToken } from '../../../core/helpers/getUserIdFromToken'
 
 export const getCommentsByPostIdHandler = async (
     req: Request<{ postId: string }, {}, {}, Partial<PostQueryInput>>,
@@ -11,6 +12,11 @@ export const getCommentsByPostIdHandler = async (
 ) => {
     try {
         const { postId } = req.params
+        const token = req.headers.authorization?.split(' ')[1]
+        let requestedUserId = null
+        if (token) {
+            requestedUserId = await getUserIdFromToken(token)
+        }
 
         const queryInput: PostQueryInput = {
             pageNumber: Number(req.query.pageNumber) || 1,
@@ -27,6 +33,7 @@ export const getCommentsByPostIdHandler = async (
             await commentsService.getCommentsByPostId({
                 postId,
                 queryDto: queryInput,
+                requestedUserId,
             })
 
         const result = {

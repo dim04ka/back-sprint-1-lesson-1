@@ -4,6 +4,7 @@ import { PostQueryInput } from '../../posts/routes/input/post-query.input'
 import { ObjectId } from 'mongodb'
 import { RepositoryNotFoundError } from '../../core/errors/repository-not-found.error'
 import { UserModel } from '../../db/mongo.db/schemes/users'
+import { LikeModel } from '../../db/mongo.db/schemes'
 
 export class CommentsRepository {
     constructor() {}
@@ -39,9 +40,11 @@ export class CommentsRepository {
     async findMany({
         postId,
         queryDto,
+        requestedUserId,
     }: {
         postId: string
         queryDto: PostQueryInput
+        requestedUserId?: string | null
     }) {
         const { pageNumber, pageSize, sortBy, sortDirection } =
             queryDto
@@ -53,7 +56,7 @@ export class CommentsRepository {
             .sort({ [sortBy]: sortDirectionNumber })
             .skip(skip)
             .limit(pageSize)
-            .exec()
+            .lean()
 
         const totalCount = await CommentModel.countDocuments({
             postId,
@@ -63,6 +66,27 @@ export class CommentsRepository {
             comments.map(async (comment) => {
                 const user = await UserModel.findById(comment.userId)
 
+                const likesInfo = {
+                    likesCount: 0,
+                    dislikesCount: 0,
+                    myStatus: 'None',
+                }
+
+                const likes = await LikeModel.find({
+                    commentId: comment._id.toString(),
+                })
+                likesInfo.likesCount = likes.filter(
+                    (like) => like.status === 'Like'
+                ).length
+                likesInfo.dislikesCount = likes.filter(
+                    (like) => like.status === 'Dislike'
+                ).length
+                likesInfo.myStatus = requestedUserId
+                    ? (likes.find(
+                          (like) => like.userId === requestedUserId
+                      )?.status ?? 'None')
+                    : 'None'
+
                 return {
                     id: comment._id.toString(),
                     content: comment.content,
@@ -71,6 +95,7 @@ export class CommentsRepository {
                         userLogin: user?.login ?? '',
                     },
                     createdAt: comment.createdAt,
+                    likesInfo,
                 }
             })
         )

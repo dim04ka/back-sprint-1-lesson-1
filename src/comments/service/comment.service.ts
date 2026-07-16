@@ -32,13 +32,16 @@ export class CommentsService {
     async getCommentsByPostId({
         postId,
         queryDto,
+        requestedUserId,
     }: {
         postId: string
         queryDto: PostQueryInput
+        requestedUserId: string | null
     }) {
         return await this.commentsRepository.findMany({
             postId,
             queryDto,
+            requestedUserId,
         })
     }
 
