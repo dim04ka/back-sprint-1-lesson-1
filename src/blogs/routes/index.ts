@@ -37,7 +37,6 @@ blogsRouter.post(
 
 blogsRouter.post(
     '/:blogId/posts',
-    superAdminGuardMiddleware,
     createBlogPostValidationMiddleware,
     inputValidationResultMiddleware,
     createBlogPostHandler

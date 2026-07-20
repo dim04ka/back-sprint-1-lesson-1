@@ -5,17 +5,12 @@ import { HttpStatus } from '../../../core/types/http-statuses'
 import { blogsService, postsService } from '../../../composition-root'
 import { errorsHandler } from '../../../core/errors/errors.handler'
 import { getExtendedLikesInfo } from '../helpers/get-extended-likes-info'
-import { getUserIdFromToken } from '../../../core/helpers/getUserIdFromToken'
 
 export const createPostHandler = async (
     req: Request,
     res: Response
 ) => {
     try {
-        const token = req.headers.authorization?.split(' ')[1]
-        const requestedUserId = token
-            ? await getUserIdFromToken(token)
-            : null
         const { title, shortDescription, content, blogId } = req.body
         const blog = await blogsService.findById(blogId)
 
@@ -39,10 +34,7 @@ export const createPostHandler = async (
             blogId,
             createdAt,
             blogName: blog.name,
-            extendedLikesInfo: await getExtendedLikesInfo(
-                id,
-                requestedUserId
-            ),
+            extendedLikesInfo: await getExtendedLikesInfo(id, null),
         }
 
         res.status(HttpStatus.Created).send(postWithInfo)
