@@ -8,4 +8,5 @@ export const RACE_LIMITED_REQUESTS_COLLECTION_NAME =
     'raceLimitedRequests'
 export const SESSIONS_COLLECTION_NAME = 'sessions'
 
-export const LIKES_COLLECTION_NAME = 'likes'
+export const LIKES_COMMENT_COLLECTION_NAME = 'likes_comment'
+export const LIKES_POST_COLLECTION_NAME = 'likes_post'

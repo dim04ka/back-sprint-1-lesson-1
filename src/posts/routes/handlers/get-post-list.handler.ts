@@ -8,12 +8,19 @@ import { postsService } from '../../../composition-root'
 
 import { mapToPostListPaginatedOutput } from '../mapper/map-to-post-list-paginated-output'
 import { errorsHandler } from '../../../core/errors/errors.handler'
+import { getUserIdFromToken } from '../../../core/helpers/getUserIdFromToken'
+import { getExtendedLikesInfo } from '../helpers/get-extended-likes-info'
 
 export const getPostListHandler = async (
     req: Request<{}, {}, {}, PostQueryInput>,
     res: Response
 ) => {
     try {
+        const token = req.headers.authorization?.split(' ')[1]
+        const requestedUserId = token
+            ? await getUserIdFromToken(token)
+            : null
+
         const queryInput = {
             pageNumber: Number(req.query.pageNumber) || 1,
             pageSize: Number(req.query.pageSize) || 10,
@@ -24,15 +31,21 @@ export const getPostListHandler = async (
         const { items, totalCount } =
             await postsService.findManyWithBlogName(queryInput)
 
-        const responseItems = items.map((item) => ({
-            id: item._id.toString(),
-            title: item.title,
-            shortDescription: item.shortDescription,
-            content: item.content,
-            blogId: item.blogId,
-            blogName: item.blogName,
-            createdAt: item.createdAt,
-        }))
+        const responseItems = await Promise.all(
+            items.map(async (item) => ({
+                id: item._id.toString(),
+                title: item.title,
+                shortDescription: item.shortDescription,
+                content: item.content,
+                blogId: item.blogId,
+                blogName: item.blogName,
+                createdAt: item.createdAt,
+                extendedLikesInfo: await getExtendedLikesInfo(
+                    item._id.toString(),
+                    requestedUserId
+                ),
+            }))
+        )
 
         const postListOutput = mapToPostListPaginatedOutput(
             responseItems,

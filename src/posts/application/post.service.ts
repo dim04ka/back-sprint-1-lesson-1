@@ -2,6 +2,7 @@ import { PostsRepository } from '../repository'
 import { CreatePost, Post, PostViewModel } from '../dto'
 import { PostQueryInput } from '../routes/input/post-query.input'
 import { WithId } from 'mongodb'
+import { LikePost } from '../../db/mongo.db/schemes'
 
 export class PostsService {
     constructor(private readonly postsRepository: PostsRepository) {}
@@ -36,6 +37,47 @@ export class PostsService {
         post: CreatePost
     }): Promise<void> {
         await this.postsRepository.update({ id, post })
+        return
+    }
+    async removeLikeStatus(
+        postId: string,
+        userId: string
+    ): Promise<void> {
+        await this.postsRepository.removeLikeStatus(postId, userId)
+    }
+    async findLikesByPostId(postId: string): Promise<LikePost[]> {
+        return await this.postsRepository.findLikesByPostId(postId)
+    }
+    async findLikeStatusByPostIdAndUserId(
+        postId: string,
+        userId: string
+    ): Promise<LikePost | null> {
+        return await this.postsRepository.findLikeStatusByPostIdAndUserId(
+            postId,
+            userId
+        )
+    }
+    async createLikeStatus(
+        postId: string,
+        userId: string,
+        likeStatus: 'Like' | 'Dislike' | 'None'
+    ): Promise<void> {
+        return await this.postsRepository.createLikeStatus(
+            postId,
+            userId,
+            likeStatus
+        )
+    }
+    async updateLikeStatus(
+        postId: string,
+        userId: string,
+        likeStatus: 'Like' | 'Dislike' | 'None'
+    ): Promise<void> {
+        await this.postsRepository.updateLikeStatus(
+            postId,
+            userId,
+            likeStatus
+        )
         return
     }
 }

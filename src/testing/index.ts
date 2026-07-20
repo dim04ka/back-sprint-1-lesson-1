@@ -10,7 +10,8 @@ import {
     PostModel,
     SessionModel,
     RaceLimitedRequestsModel,
-    LikeModel,
+    LikeCommentModel,
+    LikePostModel,
 } from '../db/mongo.db/schemes'
 
 export const testingRouter = Router()
@@ -27,7 +28,8 @@ testingRouter.delete(
             CommentModel.deleteMany(),
             RaceLimitedRequestsModel.deleteMany(),
             SessionModel.deleteMany(),
-            LikeModel.deleteMany(),
+            LikeCommentModel.deleteMany(),
+            LikePostModel.deleteMany(),
         ])
 
         res.sendStatus(HttpStatus.NoContent)

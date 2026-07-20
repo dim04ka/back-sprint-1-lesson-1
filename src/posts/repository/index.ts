@@ -1,4 +1,8 @@
-import { PostModel } from '../../db/mongo.db/schemes'
+import {
+    LikePost,
+    LikePostModel,
+    PostModel,
+} from '../../db/mongo.db/schemes'
 import { CreatePost, Post, PostViewModel } from '../dto'
 import { ObjectId, WithId } from 'mongodb'
 import type { PipelineStage } from 'mongoose'
@@ -109,9 +113,7 @@ export class PostsRepository {
     async create(
         post: CreatePost & { createdAt: string }
     ): Promise<{ id: string }> {
-        const result = await PostModel.create(
-            post as PostViewModel
-        )
+        const result = await PostModel.create(post as PostViewModel)
 
         return { id: result._id.toString() }
     }
@@ -138,5 +140,49 @@ export class PostsRepository {
         if (result.matchedCount === 0) {
             throw new RepositoryNotFoundError('Post not found')
         }
+    }
+    async removeLikeStatus(
+        postId: string,
+        userId: string
+    ): Promise<void> {
+        await LikePostModel.deleteOne({ postId, userId })
+    }
+    async findLikesByPostId(postId: string): Promise<LikePost[]> {
+        return await LikePostModel.find({ postId })
+    }
+    async findLikeStatusByPostIdAndUserId(
+        postId: string,
+        userId: string
+    ): Promise<LikePost | null> {
+        return await LikePostModel.findOne({ postId, userId })
+    }
+
+    async createLikeStatus(
+        postId: string,
+        userId: string,
+        likeStatus: 'Like' | 'Dislike' | 'None'
+    ): Promise<void> {
+        await LikePostModel.create({
+            postId,
+            userId,
+            status: likeStatus,
+            addedAt: new Date().toISOString(),
+        })
+    }
+    async updateLikeStatus(
+        postId: string,
+        userId: string,
+        likeStatus: 'Like' | 'Dislike' | 'None'
+    ): Promise<void> {
+        await LikePostModel.findOneAndUpdate(
+            { postId, userId },
+            {
+                $set: {
+                    status: likeStatus,
+                    addedAt: new Date().toISOString(),
+                },
+            },
+            { upsert: true }
+        )
     }
 }

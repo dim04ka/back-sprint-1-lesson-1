@@ -1,18 +1,18 @@
 import { model, Schema } from 'mongoose'
-import { LIKES_COLLECTION_NAME } from '../constants'
+import { LIKES_COMMENT_COLLECTION_NAME } from '../constants'
 
-export type Like = {
+export type LikeComment = {
     commentId: string
     userId: string
     status: string
 }
-export const LikeSchema = new Schema({
+export const LikeCommentSchema = new Schema({
     commentId: { type: String, required: true },
     userId: { type: String, required: true },
     status: { type: String, required: true },
 })
 
-export const LikeModel = model<Like>(
-    LIKES_COLLECTION_NAME,
-    LikeSchema
+export const LikeCommentModel = model<LikeComment>(
+    LIKES_COMMENT_COLLECTION_NAME,
+    LikeCommentSchema
 )

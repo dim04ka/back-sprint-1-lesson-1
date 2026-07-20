@@ -16,6 +16,17 @@ export type FullPost = {
     createdAt: string
 }
 
+export type ExtendedLikesInfo = {
+    likesCount: number
+    dislikesCount: number
+    myStatus: string
+    newestLikes: {
+        addedAt: string
+        userId: string
+        login: string
+    }[]
+}
+
 export type CreatePost = {
     title: string
     shortDescription: string
@@ -31,4 +42,5 @@ export type PostViewModel = {
     blogId: string
     blogName: string
     createdAt: string
+    extendedLikesInfo?: ExtendedLikesInfo
 }

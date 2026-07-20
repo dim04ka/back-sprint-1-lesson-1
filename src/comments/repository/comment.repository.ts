@@ -4,7 +4,7 @@ import { PostQueryInput } from '../../posts/routes/input/post-query.input'
 import { ObjectId } from 'mongodb'
 import { RepositoryNotFoundError } from '../../core/errors/repository-not-found.error'
 import { UserModel } from '../../db/mongo.db/schemes/users'
-import { LikeModel } from '../../db/mongo.db/schemes'
+import { LikeCommentModel } from '../../db/mongo.db/schemes'
 
 export class CommentsRepository {
     constructor() {}
@@ -72,7 +72,7 @@ export class CommentsRepository {
                     myStatus: 'None',
                 }
 
-                const likes = await LikeModel.find({
+                const likes = await LikeCommentModel.find({
                     commentId: comment._id.toString(),
                 })
                 likesInfo.likesCount = likes.filter(

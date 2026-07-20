@@ -16,6 +16,7 @@ import {
     deletePostHandler,
     createCommentHandler,
     getCommentsByPostIdHandler,
+    postLikeStatusHandler,
 } from './handlers'
 
 import { accessTokenGuard } from '../../auth/routes/guard/access.token.guard'
@@ -85,4 +86,11 @@ postsRouter.get(
     '/:postId/comments',
     postByPostIdExistenceGuard,
     getCommentsByPostIdHandler
+)
+
+postsRouter.put(
+    '/:postId/like-status',
+    accessTokenGuard,
+    postByPostIdExistenceGuard,
+    postLikeStatusHandler
 )
