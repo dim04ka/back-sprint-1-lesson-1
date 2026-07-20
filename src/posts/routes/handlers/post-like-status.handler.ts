@@ -1,8 +1,7 @@
 import { postsService } from '../../../composition-root'
 import { errorsHandler } from '../../../core/errors/errors.handler'
-import { getUserIdFromToken } from '../../../core/helpers/getUserIdFromToken'
 import { HttpStatus } from '../../../core/types/http-statuses'
-import e, { Request, Response } from 'express'
+import { Request, Response } from 'express'
 
 export const postLikeStatusHandler = async (
     req: Request<{ postId: string }>,
@@ -12,9 +11,7 @@ export const postLikeStatusHandler = async (
     const { likeStatus } = req.body
 
     try {
-        const token = req.headers.authorization?.split(' ')[1]
-
-        const userId = await getUserIdFromToken(token as string)
+        const userId = req.user!.id
 
         const currentLikeStatus =
             await postsService.findLikeStatusByPostIdAndUserId(
@@ -24,13 +21,11 @@ export const postLikeStatusHandler = async (
         if (currentLikeStatus) {
             if (likeStatus === 'None') {
                 await postsService.removeLikeStatus(postId, userId)
-                res.status(HttpStatus.Ok).send(likeStatus)
-                return
+                return res.sendStatus(HttpStatus.NoContent)
             }
 
             if (currentLikeStatus.status === likeStatus) {
-                res.status(HttpStatus.Ok).send(likeStatus)
-                return
+                return res.sendStatus(HttpStatus.NoContent)
             }
             await postsService.updateLikeStatus(
                 postId,
@@ -38,14 +33,18 @@ export const postLikeStatusHandler = async (
                 likeStatus
             )
         } else {
+            if (likeStatus === 'None') {
+                return res.sendStatus(HttpStatus.NoContent)
+            }
+
             await postsService.createLikeStatus(
                 postId,
                 userId,
                 likeStatus
             )
         }
-        res.status(HttpStatus.NoContent).send(likeStatus)
+        return res.sendStatus(HttpStatus.NoContent)
     } catch (error) {
-        errorsHandler(e, res)
+        errorsHandler(error, res)
     }
 }

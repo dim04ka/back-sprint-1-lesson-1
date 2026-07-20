@@ -148,13 +148,13 @@ export class PostsRepository {
         await LikePostModel.deleteOne({ postId, userId })
     }
     async findLikesByPostId(postId: string): Promise<LikePost[]> {
-        return await LikePostModel.find({ postId })
+        return await LikePostModel.find({ postId }).lean()
     }
     async findLikeStatusByPostIdAndUserId(
         postId: string,
         userId: string
     ): Promise<LikePost | null> {
-        return await LikePostModel.findOne({ postId, userId })
+        return await LikePostModel.findOne({ postId, userId }).lean()
     }
 
     async createLikeStatus(

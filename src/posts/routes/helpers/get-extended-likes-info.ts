@@ -1,4 +1,6 @@
-import { postsService, usersQueryService } from '../../../composition-root'
+import { ObjectId } from 'mongodb'
+import { postsService } from '../../../composition-root'
+import { UserModel } from '../../../db/mongo.db/schemes'
 import { ExtendedLikesInfo } from '../../dto'
 
 export const getExtendedLikesInfo = async (
@@ -8,23 +10,31 @@ export const getExtendedLikesInfo = async (
     const likes = await postsService.findLikesByPostId(postId)
     const onlyLikes = likes.filter((like) => like.status === 'Like')
 
-    const newestLikes = await Promise.all(
-        onlyLikes
-            .sort(
-                (a, b) =>
-                    new Date(b.addedAt).getTime() -
-                    new Date(a.addedAt).getTime()
-            )
-            .slice(0, 3)
-            .map(async (like) => {
-                const user = await usersQueryService.findById(like.userId)
+    const newestLikeStatuses = onlyLikes
+        .sort(
+            (a, b) =>
+                new Date(b.addedAt).getTime() -
+                new Date(a.addedAt).getTime()
+        )
+        .slice(0, 3)
 
-                return {
-                    addedAt: like.addedAt,
-                    userId: like.userId,
-                    login: user?.login || '',
-                }
-            })
+    const users = await UserModel.find({
+        _id: {
+            $in: newestLikeStatuses.map(
+                (like) => new ObjectId(like.userId)
+            ),
+        },
+    }).lean()
+
+    const loginsByUserId = new Map(
+        users.map((user) => [user._id.toString(), user.login])
+    )
+
+    const newestLikes = newestLikeStatuses.map((like) => ({
+        addedAt: like.addedAt,
+        userId: like.userId,
+        login: loginsByUserId.get(like.userId) || '',
+    })
     )
 
     return {
