@@ -4,6 +4,7 @@ import { Post } from '../../../posts/dto'
 
 export const PostSchema = new Schema({
     title: String,
+    shortDescription: String,
     content: String,
     blogId: String,
     blogName: String,
