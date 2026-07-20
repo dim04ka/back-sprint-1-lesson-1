@@ -44,7 +44,7 @@ export const postLikeStatusHandler = async (
                 likeStatus
             )
         }
-        res.status(HttpStatus.Ok).send(likeStatus)
+        res.status(HttpStatus.NoContent).send(likeStatus)
     } catch (error) {
         errorsHandler(e, res)
     }

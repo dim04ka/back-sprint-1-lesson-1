@@ -6,6 +6,8 @@ import { WithId } from 'mongodb'
 import { Blog } from '../../domain'
 import { HttpStatus } from '../../../core/types/http-statuses'
 import { PostViewModel } from '../../../posts/dto'
+import { getExtendedLikesInfo } from '../../../posts/routes/helpers/get-extended-likes-info'
+import { getUserIdFromToken } from '../../../core/helpers/getUserIdFromToken'
 
 export const createBlogPostHandler = async (
     req: Request<
@@ -16,6 +18,10 @@ export const createBlogPostHandler = async (
     res: Response
 ) => {
     try {
+        const token = req.headers.authorization?.split(' ')[1]
+        const requestedUserId = token
+            ? await getUserIdFromToken(token)
+            : null
         const blogId = req.params.blogId
         const { title, shortDescription, content } = req.body
 
@@ -38,6 +44,10 @@ export const createBlogPostHandler = async (
             blogId,
             createdAt,
             blogName: blog.name,
+            extendedLikesInfo: await getExtendedLikesInfo(
+                id,
+                requestedUserId
+            ),
         }
         res.status(HttpStatus.Created).send(responsePost)
     } catch (e: unknown) {

@@ -20,7 +20,10 @@ import {
 } from './handlers'
 
 import { accessTokenGuard } from '../../auth/routes/guard/access.token.guard'
-import { commentContentValidation } from '../../comments/validation/comment.validation'
+import {
+    commentContentValidation,
+    commentLikeStatusValidation,
+} from '../../comments/validation/comment.validation'
 import { postsService } from '../../composition-root'
 export const postsRouter = Router()
 
@@ -91,6 +94,8 @@ postsRouter.get(
 postsRouter.put(
     '/:postId/like-status',
     accessTokenGuard,
+    commentLikeStatusValidation,
     postByPostIdExistenceGuard,
+    inputValidationResultMiddleware,
     postLikeStatusHandler
 )
