@@ -7,6 +7,8 @@ import { HttpStatus } from '../../../core/types/http-statuses'
 import { PostQueryInput } from '../../../posts/routes/input/post-query.input'
 import { mapToPostListPaginatedOutput } from '../../../posts/routes/mapper/map-to-post-list-paginated-output'
 import { blogsService } from '../../../composition-root'
+import { getUserIdFromToken } from '../../../core/helpers/getUserIdFromToken'
+import { getExtendedLikesInfo } from '../../../posts/routes/helpers/get-extended-likes-info'
 
 export const getBlogPostListHandler = async (
     req: Request<{ blogId: string }, {}, {}, BlogPostQueryInput>,
@@ -14,6 +16,10 @@ export const getBlogPostListHandler = async (
 ) => {
     try {
         const blogId = req.params.blogId
+        const token = req.headers.authorization?.split(' ')[1]
+        const requestedUserId = token
+            ? await getUserIdFromToken(token)
+            : null
 
         const queryInput = {
             pageNumber: Number(req.query.pageNumber) || 1,
@@ -30,15 +36,21 @@ export const getBlogPostListHandler = async (
                 blogId,
             })
 
-        const responseItems = items.map((item) => ({
-            id: item._id.toString(),
-            title: item.title,
-            shortDescription: item.shortDescription,
-            content: item.content,
-            blogId: item.blogId,
-            blogName: item.blogName,
-            createdAt: item.createdAt,
-        }))
+        const responseItems = await Promise.all(
+            items.map(async (item) => ({
+                id: item._id.toString(),
+                title: item.title,
+                shortDescription: item.shortDescription,
+                content: item.content,
+                blogId: item.blogId,
+                blogName: item.blogName,
+                createdAt: item.createdAt,
+                extendedLikesInfo: await getExtendedLikesInfo(
+                    item._id.toString(),
+                    requestedUserId
+                ),
+            }))
+        )
 
         const postListOutput = mapToPostListPaginatedOutput(
             responseItems,
